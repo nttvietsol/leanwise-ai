@@ -10,11 +10,8 @@ export default defineConfig({
   },
   plugins: [
     tsconfigPaths(),
-    tanstackStart({
-      target: 'cloudflare-module',
-      customViteReactPlugin: true,
-    }),
     cloudflare({ viteEnvironment: { name: 'ssr' } }),
+    tanstackStart(),
     viteReact(),
   ],
 });

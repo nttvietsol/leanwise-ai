@@ -58,7 +58,7 @@ async function sendEmail(input: SendInput): Promise<void> {
 
 /* ─────────── Contact form ─────────── */
 export const submitContact = createServerFn({ method: 'POST' })
-  .validator(
+  .inputValidator(
     (d: { name: string; email: string; subject?: string; message: string }) => {
       if (!d.name?.trim()) throw new Error('Name is required');
       if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
@@ -82,7 +82,7 @@ export const submitContact = createServerFn({ method: 'POST' })
 
 /* ─────────── Demo request ─────────── */
 export const submitDemo = createServerFn({ method: 'POST' })
-  .validator(
+  .inputValidator(
     (d: {
       name: string;
       company: string;
@@ -116,7 +116,7 @@ export const submitDemo = createServerFn({ method: 'POST' })
 
 /* ─────────── Waitlist ─────────── */
 export const joinWaitlist = createServerFn({ method: 'POST' })
-  .validator((d: { email: string; company?: string; product?: string }) => {
+  .inputValidator((d: { email: string; company?: string; product?: string }) => {
     if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
     return d;
   })
@@ -134,7 +134,7 @@ export const joinWaitlist = createServerFn({ method: 'POST' })
 
 /* ─────────── Newsletter ─────────── */
 export const subscribeNewsletter = createServerFn({ method: 'POST' })
-  .validator((d: { email: string }) => {
+  .inputValidator((d: { email: string }) => {
     if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
     return d;
   })
@@ -148,7 +148,7 @@ export const subscribeNewsletter = createServerFn({ method: 'POST' })
 
 /* ─────────── Resource gate (lead capture) ─────────── */
 export const requestResource = createServerFn({ method: 'POST' })
-  .validator((d: { email: string; name?: string; resourceSlug: string }) => {
+  .inputValidator((d: { email: string; name?: string; resourceSlug: string }) => {
     if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
     if (!d.resourceSlug) throw new Error('Resource slug is required');
     return d;
