@@ -1,3 +1,4 @@
+import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { useI18n } from '~/i18n';
 import { Page, SectionHeader, Marquee } from '~/components/ui';
@@ -12,23 +13,42 @@ export const Route = createFileRoute('/')({
   }),
 });
 
-function HeroShot() {
+function HeroAppShot() {
+  const { t } = useI18n();
+  const [tab, setTab] = useState<'dashboard' | 'validation'>('dashboard');
+  const shot = tab === 'dashboard'
+    ? '/assets/dashboard-preview.png'
+    : '/assets/dashboard-preview-2.png';
   return (
-    <div className="hero-shot">
-      <div className="hero-shot-chrome">
-        <div className="hero-shot-dots"><span></span><span></span><span></span></div>
-        <div className="hero-shot-url">
-          <svg width="11" height="11" viewBox="0 0 12 12" fill="none">
-            <path d="M3 5V4a3 3 0 016 0v1m-7 0h8v6H2V5z" stroke="currentColor" strokeWidth="1.2" />
-          </svg>
-          app.leanwise.ai / connect-mastery
+    <div className="hero-panel hero-panel--shot">
+      <div className="hero-panel-chrome">
+        <div className="chrome-dots">
+          <span className="dot-close"></span>
+          <span className="dot-min"></span>
+          <span className="dot-max"></span>
+        </div>
+        <div className="chrome-url">dashboard.leanwise.ai</div>
+        <div className="chrome-tabs">
+          <button
+            className={tab === 'dashboard' ? 'is-active' : ''}
+            onClick={() => setTab('dashboard')}
+          >{t('home.hero.tab.dashboard')}</button>
+          <button
+            className={tab === 'validation' ? 'is-active' : ''}
+            onClick={() => setTab('validation')}
+          >{t('home.hero.tab.validation')}</button>
         </div>
       </div>
-      <img
-        src="/assets/dashboard-preview.png"
-        alt="LeanWise CONNECT Mastery dashboard — projects, document counts, and quality scores"
-      />
-      <div className="hero-shot-tag"><span className="pulse"></span>Live · CONNECT Mastery</div>
+      <div className="hero-panel-body">
+        <img
+          src={shot}
+          alt="LeanWise CONNECT Mastery dashboard — live product screenshot"
+          loading="eager"
+        />
+      </div>
+      <div className="hero-panel-foot">
+        <span className="panel-status-dot"></span>{t('home.hero.panel.status')}
+      </div>
     </div>
   );
 }
@@ -64,16 +84,17 @@ function TrustBar() {
 
 function ProblemCard({
   n, title, body, icon,
-}: { n: string; title: string; body: string; icon: 'trophy' | 'hourglass' | 'people' }) {
+}: { n: string; title: string; body: string; icon: 'hourglass' | 'shield' | 'people' }) {
   const icons = {
-    trophy: (
-      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
-        <path d="M5 4h14v3a5 5 0 01-5 5h-4a5 5 0 01-5-5V4zM5 5H3a2 2 0 002 4M19 5h2a2 2 0 01-2 4M9 18h6M12 12v6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
     hourglass: (
       <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
         <path d="M7 3h10M7 21h10M7 3v3a5 5 0 005 5 5 5 0 005-5V3M7 21v-3a5 5 0 015-5 5 5 0 015 5v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
+      </svg>
+    ),
+    shield: (
+      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
+        <path d="M12 3L4 7v5c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V7l-8-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
+        <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
       </svg>
     ),
     people: (
@@ -167,16 +188,16 @@ function HomePage() {
               </Link>
             </div>
             <div className="hero-meta">
-              <div><strong>4</strong> factories live</div>
+              <div><strong>3</strong><span className="hero-meta-l">{t('home.hero.meta.factories')}</span></div>
               <div className="dot-sep"></div>
-              <div><strong>3,000+</strong> docs processed</div>
+              <div><strong>+8.2 pts</strong><span className="hero-meta-l">{t('home.hero.meta.oee')}</span></div>
               <div className="dot-sep"></div>
-              <div><strong>75%</strong> time saved</div>
+              <div><strong>72 hrs</strong><span className="hero-meta-l">{t('home.hero.meta.deploy')}</span></div>
             </div>
           </div>
 
           <div className="hero-visual">
-            <HeroShot />
+            <HeroAppShot />
           </div>
         </div>
       </section>
@@ -192,8 +213,8 @@ function HomePage() {
             align="center"
           />
           <div className="problem-grid">
-            <ProblemCard n="01" title={t('home.problem.c1.t')} body={t('home.problem.c1.b')} icon="trophy" />
-            <ProblemCard n="02" title={t('home.problem.c2.t')} body={t('home.problem.c2.b')} icon="hourglass" />
+            <ProblemCard n="01" title={t('home.problem.c1.t')} body={t('home.problem.c1.b')} icon="hourglass" />
+            <ProblemCard n="02" title={t('home.problem.c2.t')} body={t('home.problem.c2.b')} icon="shield" />
             <ProblemCard n="03" title={t('home.problem.c3.t')} body={t('home.problem.c3.b')} icon="people" />
           </div>
           <div className="problem-transition">

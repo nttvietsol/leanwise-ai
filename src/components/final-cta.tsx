@@ -46,11 +46,12 @@ export function FinalCTA({
 }
 
 export function ResultsStrip() {
+  const { t } = useI18n();
   const stats = [
-    { n: '75%', l: 'Reduction in document check time' },
-    { n: '3,000+', l: 'Documents processed to date' },
-    { n: '4', l: 'Factories using CONNECT Mastery' },
-    { n: '99%', l: 'Human error eliminated' },
+    { n: '+8.2', unit: 'pts', l: t('home.results.1') },
+    { n: '−47', unit: '%', l: t('home.results.2') },
+    { n: '72', unit: 'hrs', l: t('home.results.3') },
+    { n: '3.4×', l: t('home.results.4') },
   ];
   return (
     <section className="results-strip">
@@ -58,7 +59,9 @@ export function ResultsStrip() {
         <div className="results-grid">
           {stats.map((s, i) => (
             <div key={i} className="result-stat">
-              <div className="result-num">{s.n}</div>
+              <div className="result-num">
+                {s.n}{s.unit && <span className="unit">{s.unit}</span>}
+              </div>
               <div className="result-l">{s.l}</div>
             </div>
           ))}

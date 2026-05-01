@@ -23,12 +23,25 @@
   .product-grid { grid-template-columns: 1fr 1fr; }
   .footer-grid { grid-template-columns: 1.2fr 1fr 1fr; }
   .footer-brand { grid-column: 1 / -1; }
+
+  /* Split sections stack at tablet */
+  .feat-block { grid-template-columns: 1fr; }
+  .contact-grid { grid-template-columns: 1fr; }
+  .origin-grid { grid-template-columns: 1fr; }
+}
+
+/* ─── WIDE MOBILE (≤ 900px) ─── */
+@media (max-width: 900px) {
+  .blog-grid { grid-template-columns: 1fr 1fr; }
+  .res-grid { grid-template-columns: 1fr 1fr; }
+  .values-grid { grid-template-columns: 1fr 1fr; }
 }
 
 /* ─── HERO STACK BREAKPOINT (≤ 880px) ─── */
 @media (max-width: 880px) {
   .hero-inner { grid-template-columns: 1fr !important; gap: 32px; }
   .hero-shot { transform: none; max-width: 640px; margin: 0 auto; }
+  .hero-panel { transform: none; }
   .hero { padding-top: 32px; padding-bottom: 56px; }
 
   .problem-grid { grid-template-columns: 1fr; }
@@ -106,6 +119,11 @@
   /* Blog & Resources */
   .blog-grid, .res-grid { grid-template-columns: 1fr; }
   .values-grid { grid-template-columns: 1fr; }
+  .blog-feat { grid-template-columns: 1fr; }
+
+  /* Step grids */
+  .demo-steps { grid-template-columns: 1fr; }
+  .how-steps { grid-template-columns: 1fr; }
 
   /* Final CTA */
   .final-cta-card { padding: 36px 24px; border-radius: 20px; }
@@ -124,8 +142,8 @@
   .gate-modal { padding: 24px; max-width: calc(100vw - 32px); }
 }
 
-/* ─── SMALL MOBILE (≤ 420px) ─── */
-@media (max-width: 420px) {
+/* ─── SMALL MOBILE (≤ 480px) ─── */
+@media (max-width: 480px) {
   .results-grid { grid-template-columns: 1fr; }
   .footer-grid { grid-template-columns: 1fr; }
   .lang-toggle { font-size: 11px; }

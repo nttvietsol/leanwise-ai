@@ -154,19 +154,17 @@ export function Nav() {
         </div>
       </div>
 
-      {mobileOpen && (
-        <div className="mobile-menu">
-          <Link to="/solutions/connect-mastery">{t('nav.solutions.connect')}</Link>
-          <Link to="/solutions/sop-mastery">{t('nav.solutions.sop')}</Link>
-          <Link to="/about">{t('nav.about')}</Link>
-          <Link to="/blog">{t('nav.blog')}</Link>
-          <Link to="/resources">{t('nav.resources')}</Link>
-          <Link to="/contact">{t('nav.contact')}</Link>
-          <Link to="/get-a-demo" className="btn btn-primary">
-            {t('nav.demo')}
-          </Link>
-        </div>
-      )}
+      <div className={`mobile-menu${mobileOpen ? '' : ' is-hidden'}`}>
+        <Link to="/solutions/connect-mastery">{t('nav.solutions.connect')}</Link>
+        <Link to="/solutions/sop-mastery">{t('nav.solutions.sop')}</Link>
+        <Link to="/about">{t('nav.about')}</Link>
+        <Link to="/blog">{t('nav.blog')}</Link>
+        <Link to="/resources">{t('nav.resources')}</Link>
+        <Link to="/contact">{t('nav.contact')}</Link>
+        <Link to="/get-a-demo" className="btn btn-primary">
+          {t('nav.demo')}
+        </Link>
+      </div>
     </header>
   );
 }

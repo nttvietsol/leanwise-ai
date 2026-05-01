@@ -1,5 +1,4 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import type { ReactNode } from 'react';
 import { Page, SectionHeader } from '~/components/ui';
 import { FinalCTA, ResultsStrip } from '~/components/final-cta';
 
@@ -18,145 +17,122 @@ export const Route = createFileRoute('/solutions/connect-mastery')({
 });
 
 function FeatureBlock({
-  num, title, body, bullets, art, reverse,
+  eyebrow,
+  title,
+  body,
+  bullets,
+  imgSrc,
+  imgAlt,
+  flip,
 }: {
-  num: string;
+  eyebrow: string;
   title: string;
   body: string;
   bullets: string[];
-  art: ReactNode;
-  reverse?: boolean;
+  imgSrc: string;
+  imgAlt: string;
+  flip?: boolean;
 }) {
   return (
-    <div className={`feature-block ${reverse ? 'is-reverse' : ''}`}>
-      <div className="feature-copy">
-        <div className="feature-num mono">Feature {num}</div>
+    <div className={`feat-block${flip ? ' feat-block--flip' : ''}`}>
+      <figure className="feat-img">
+        <img src={imgSrc} alt={imgAlt} loading="lazy" />
+      </figure>
+      <div className="feat-copy">
+        <div className="feat-eyebrow mono">{eyebrow}</div>
         <h3 className="h2">{title}</h3>
         <p className="lead">{body}</p>
-        <ul className="feature-bullets">
+        <ul className="feat-list">
           {bullets.map((b, i) => (
-            <li key={i}>
-              <svg width="16" height="16" viewBox="0 0 16 16" fill="none">
-                <circle cx="8" cy="8" r="7" stroke="currentColor" strokeWidth="1.4" />
-                <path d="M5 8.2l2 2 4-4.4" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round" />
-              </svg>
-              {b}
-            </li>
+            <li key={i}>{b}</li>
           ))}
         </ul>
       </div>
-      <div className="feature-art">{art}</div>
     </div>
   );
 }
 
-function Step({ n, title, body }: { n: string; title: string; body: string }) {
+function HowStep({ n, title, body }: { n: string; title: string; body: string }) {
   return (
-    <div className="step-card">
-      <div className="step-n mono">{n}</div>
-      <h3 className="h3">{title}</h3>
-      <p>{body}</p>
+    <div className="step">
+      <div className="step-num">{n}</div>
+      <h3 className="step-title">{title}</h3>
+      <p className="step-body">{body}</p>
     </div>
-  );
-}
-
-function Quote({ text, attr, sub }: { text: string; attr: string; sub: string }) {
-  return (
-    <figure className="quote-card">
-      <svg width="28" height="22" viewBox="0 0 28 22" fill="none" aria-hidden="true">
-        <path d="M0 22V12C0 5.4 4.5 0 12 0v4C7.6 4 5 7.6 5 12h5v10H0zm16 0V12C16 5.4 20.5 0 28 0v4c-4.4 0-7 3.6-7 8h5v10H16z" fill="currentColor" opacity=".15" />
-      </svg>
-      <blockquote>{text}</blockquote>
-      <figcaption>
-        <strong>{attr}</strong>
-        <span>{sub}</span>
-      </figcaption>
-    </figure>
   );
 }
 
 function ConnectMasteryPage() {
   return (
     <Page>
-      <section className="cm-hero section">
-        <div className="container cm-hero-grid">
-          <div className="cm-hero-copy">
-            <span className="pill pill-amber"><span className="dot"></span>Available now</span>
-            <h1 className="h-display">CONNECT Mastery</h1>
-            <div className="cm-tag">Eliminate Compliance Waste</div>
-            <p className="lead">
-              Automate CONNECT document verification. Catch every critical error before the auditor does — without the manual work.
-            </p>
-            <div className="hero-ctas">
-              <Link to="/get-a-demo" className="btn btn-primary btn-lg">Get a Demo</Link>
-              <Link to="/contact" className="btn btn-ghost btn-lg">Try Free for 1 Batch →</Link>
-            </div>
+      <section className="product-hero section">
+        <div className="container">
+          <span className="pill pill-ok">
+            <span className="pill-dot" />
+            Available Now
+          </span>
+          <h1 className="h1">
+            <span className="ink-grad">Eliminate Compliance Waste</span>
+          </h1>
+          <p className="lead">
+            CONNECT Mastery automates IKEA CONNECT compliance checks using AI. What takes your team
+            4–6 hours now takes minutes — with higher accuracy than any manual process.
+          </p>
+          <div className="hero-ctas">
+            <Link to="/get-a-demo" className="btn btn-primary btn-lg">
+              Get a Demo
+            </Link>
+            <Link to="/contact" className="btn btn-ghost btn-lg">
+              See it in Action
+            </Link>
           </div>
-          <div className="cm-hero-art">
-            <figure className="product-shot">
-              <img
-                src="/assets/dashboard-preview-2.png"
-                alt="CONNECT Mastery — document review with PDF extraction and validation pipeline"
-                loading="eager"
-              />
-            </figure>
+          <div className="product-hero-trust">
+            <img src="/assets/ngoc-son-logo.png" alt="Ngoc Son" loading="lazy" />
+            <img src="/assets/sedo-logo.png" alt="Sedo" loading="lazy" />
+            <img src="/assets/Talimex-logo.png" alt="Talimex" loading="lazy" />
           </div>
         </div>
       </section>
 
       <section className="section">
         <div className="container">
-          <SectionHeader
-            eyebrow="Key features"
-            title="Three jobs CONNECT Mastery does for you"
-            align="center"
-          />
-          <div className="features-list">
+          <div className="feat-blocks">
             <FeatureBlock
-              num="01"
-              title="Catch the Errors That Actually Fail Audits."
-              body="CONNECT documents have hundreds of fields — but not all of them carry the same risk. CONNECT Mastery System focuses where it matters most: critical and major checkpoints, plus the specific fields that repeatedly cause rejections in real IKEA audits. For document types where full verification is possible, every field is checked."
+              eyebrow="Feature 01"
+              title="AI-Powered Document Verification"
+              body="Upload your factory documents and let our AI instantly cross-reference them against IKEA CONNECT requirements. No more manual page-by-page checking."
               bullets={[
-                'Critical & major checkpoint verification — the failures that cost you shipments',
-                'Real-world error patterns built from actual CONNECT audit experience',
-                'Full field verification for supported document types — partial for complex standards',
+                'Processes 50+ document types',
+                'Catches mismatches humans miss',
+                'Instant pass/fail report',
               ]}
-              art={
-                <figure className="product-shot">
-                  <img src="/assets/auto-check.png" alt="CONNECT Mastery validation results" loading="lazy" />
-                </figure>
-              }
+              imgSrc="/assets/auto-check.png"
+              imgAlt="AI document verification results"
             />
             <FeatureBlock
-              num="02"
-              reverse
-              title="Every Requirement in Your TSS — Covered and Verified."
-              body="You've already downloaded your Test Status Summary from IKEA's CONNECT system — it's your compliance baseline. Simply upload it to CONNECT Mastery System, and we'll automatically map every requirement in your TSS against your Test Plan and submitted documents, instantly surfacing anything that's missing or mismatched."
+              eyebrow="Feature 02"
+              title="TSS vs. Test Plan Matching"
+              body="Automatically match Technical Specification Sheets against test plans. Our AI understands the semantic relationship between requirements — not just keyword matching."
               bullets={[
-                'Critical & major requirement matching — the gaps auditors look for first',
-                'Built around common mismatch patterns from real CONNECT submissions',
-                "Clear gap report showing exactly what's missing before you submit",
+                'Semantic requirement matching',
+                'Highlights specific discrepancies',
+                'Exportable compliance report',
               ]}
-              art={
-                <figure className="product-shot">
-                  <img src="/assets/TSS-check.png" alt="TSS validation heatmap" loading="lazy" />
-                </figure>
-              }
+              imgSrc="/assets/TSS-check.png"
+              imgAlt="TSS vs test plan matching"
+              flip
             />
             <FeatureBlock
-              num="03"
-              title="One Click. Walk Away. Results Waiting."
-              body="Hit 'Process All' and let the cloud handle the rest. CONNECT Mastery System runs your full compliance check — document verification and TSS matching — entirely in the background. Close your laptop, shut the app, step away. Results will be ready on any device when you return."
+              eyebrow="Feature 03"
+              title="Cloud-Based Processing"
+              body="No software to install. Upload documents from anywhere and get results in minutes. Your data is encrypted and never shared."
               bullets={[
-                'Full compliance check runs on cloud — no open tabs, no waiting required',
-                'Document verification + TSS matching processed simultaneously',
-                'Results on any device with internet connection',
+                'Works from any device',
+                '256-bit encryption',
+                'Results in under 3 minutes',
               ]}
-              art={
-                <figure className="product-shot product-shot-bleed">
-                  <img src="/assets/cloud-process.png" alt="Cloud processing — Process All" loading="lazy" />
-                </figure>
-              }
+              imgSrc="/assets/cloud-process.png"
+              imgAlt="Cloud-based processing"
             />
           </div>
         </div>
@@ -167,65 +143,37 @@ function ConnectMasteryPage() {
       <section className="section">
         <div className="container">
           <SectionHeader
-            eyebrow="How it works"
-            title="Up and Running in 2 Weeks"
-            sub="Simple onboarding process — no complex IT integration required"
+            eyebrow="Process"
+            title="From upload to results in 3 steps"
             align="center"
           />
-          <div className="steps-grid">
-            <Step n="01" title="Book Demo" body="30-minute call to see CONNECT Mastery in action with your own documents" />
-            <Step n="02" title="1 Week Setup" body="Quick onboarding and training for your team — ready to use in days" />
-            <Step n="03" title="Start Saving Time" body="Immediately reduce check time by 75% and eliminate errors" />
-          </div>
-          <div className="steps-note">
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <circle cx="7" cy="7" r="6" stroke="currentColor" strokeWidth="1.5" />
-              <path d="M7 4v3M7 9.5v.5" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-            </svg>
-            No ERP integration needed. Browser only. Any device. Works with your existing CONNECT workflow.
-          </div>
-        </div>
-      </section>
-
-      <section className="section testimonial-sec">
-        <div className="container">
-          <SectionHeader
-            eyebrow="What customers say"
-            title="From CONNECT leaders on the floor"
-            align="center"
-          />
-          <div className="testimonial-grid">
-            <Quote
-              text="Saving a lot of time — what used to take our team a full afternoon now takes under an hour."
-              attr="CONNECT Leader"
-              sub="IKEA Supplier Factory, Vietnam"
+          <div className="how-steps">
+            <HowStep
+              n="01"
+              title="Upload Documents"
+              body="Drop your factory documents, test plans, or TSS files into the secure upload portal."
             />
-            <Quote
-              text="Thank you — it found the correct issue that we had missed in our manual review."
-              attr="CONNECT User"
-              sub="Quality Assurance Team"
+            <HowStep
+              n="02"
+              title="AI Analysis"
+              body="Our AI reads, understands, and cross-references every requirement in seconds."
             />
-            <Quote
-              text="The software runs correctly and catches errors we didn't even know were there."
-              attr="CONNECT User"
-              sub="Compliance Officer"
+            <HowStep
+              n="03"
+              title="Review Results"
+              body="Get a clear pass/fail report with specific discrepancies highlighted for your team to action."
             />
           </div>
         </div>
       </section>
 
       <FinalCTA
-        title="Ready to Master CONNECT?"
-        sub="Try with 1 document batch for free. No credit card required."
-        primary="Book a Demo"
-        secondary="Try Free for 1 Batch"
+        title="Start your compliance transformation"
+        sub="Join 4 factories already saving hours per audit cycle with CONNECT Mastery."
+        primary="Get a Demo"
+        secondary="Contact Us"
         secondaryTo="/contact"
       />
-      <div className="trust-badges-strip container">
-        <div className="trust-badge"><span>✓</span>No credit card needed</div>
-        <div className="trust-badge"><span>✓</span>2 weeks to full deployment</div>
-        <div className="trust-badge"><span>✓</span>Secure & compliant</div>
-      </div>
     </Page>
   );
 }

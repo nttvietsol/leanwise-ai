@@ -67,6 +67,23 @@
   --accent: var(--teal);
   --accent-deep: var(--teal-deep);
   --accent-soft: #E6FAF6;
+  --accent-glow: oklch(0.78 0.16 175 / 0.18);
+
+  /* Ink scale aliases — map to existing tokens so both naming schemes work */
+  --ink-0: #050608;
+  --ink-1: var(--ink);
+  --ink-4: var(--ink-3);
+  --ink-5: var(--muted);
+  --ink-6: #A8ACB4;
+  --ink-7: #D6D8DC;
+  --ink-8: var(--bg-3);
+  --ink-9: var(--bg);
+
+  /* Container */
+  --container-narrow: 880px;
+
+  /* Shadows */
+  --shadow-soft: 0 2px 8px rgba(11, 27, 43, 0.06);
 }
 
 * { box-sizing: border-box; }
@@ -141,14 +158,17 @@ img { max-width: 100%; display: block; }
 .container {
   max-width: 1280px;
   margin: 0 auto;
-  padding-left: var(--pad-x);
-  padding-right: var(--pad-x);
+  padding-inline: var(--pad-x);
 }
 .container-wide {
   max-width: 1440px;
   margin: 0 auto;
-  padding-left: var(--pad-x);
-  padding-right: var(--pad-x);
+  padding-inline: var(--pad-x);
+}
+.container-narrow {
+  max-width: var(--container-narrow);
+  margin: 0 auto;
+  padding-inline: var(--pad-x);
 }
 .section { padding-block: clamp(64px, 9vw, 128px); }
 .section-tight { padding-block: clamp(48px, 6vw, 80px); }
@@ -228,6 +248,17 @@ img { max-width: 100%; display: block; }
   color: var(--cta-deep);
 }
 .pill-amber .dot { background: var(--cta); box-shadow: 0 0 0 3px #FCDFC5; }
+.pill-ok {
+  background: #EDF7F2;
+  border-color: color-mix(in oklab, var(--ok) 25%, transparent);
+  color: #1A7A45;
+}
+.pill-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--ok);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--ok) 18%, transparent);
+  flex: 0 0 6px;
+}
 
 /* Logo mark (we draw it inline so it inherits color when needed) */
 .logo-text {
@@ -237,17 +268,21 @@ img { max-width: 100%; display: block; }
   color: var(--ink);
 }
 
-/* Hex grid pattern overlay (used for blueprint feel) */
+/* Subtle grid / dot patterns */
 .bg-grid {
   background-image:
     linear-gradient(var(--line-2) 1px, transparent 1px),
     linear-gradient(90deg, var(--line-2) 1px, transparent 1px);
-  background-size: 40px 40px;
+  background-size: 56px 56px;
   background-position: -1px -1px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
 }
 .bg-dots {
   background-image: radial-gradient(circle, rgba(11,27,43,0.08) 1px, transparent 1px);
-  background-size: 22px 22px;
+  background-size: 24px 24px;
+  mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
+  -webkit-mask-image: radial-gradient(ellipse 80% 80% at 50% 50%, black 40%, transparent 100%);
 }
 
 /* Fade-in helper */

@@ -1,62 +1,91 @@
-import { useId, useState } from 'react';
+import { useId, useState, type ReactElement } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Page } from '~/components/ui';
 import { FinalCTA } from '~/components/final-cta';
-import { NewsletterBox } from '~/components/newsletter-box';
 import { RESOURCES, RES_CATS, RES_TYPES, type ResourceItem } from '~/data/resources';
 import { requestResource } from '~/server/forms';
+import { useI18n } from '~/i18n';
 
 export const Route = createFileRoute('/resources')({
   component: ResourcesPage,
-  head: () => ({ meta: [{ title: 'Resources — Free playbooks and field guides' }] }),
+  head: () => ({ meta: [{ title: 'Resources — Free Tools & Guides' }] }),
 });
 
-function ResourceCard({ res, onDownload }: { res: ResourceItem; onDownload: () => void }) {
+const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
+
+type ArtConfig = { cls: string; icon: ReactElement };
+
+const ART: Record<ResourceItem['type'], ArtConfig> = {
+  Ebook: {
+    cls: 'res-art--ebook',
+    icon: (
+      <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
+        <rect x="2" y="2" width="52" height="60" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
+        <path d="M12 16h32M12 24h32M12 32h22M12 40h28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  Infographic: {
+    cls: 'res-art--guide',
+    icon: (
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
+        <path d="M10 40V24M22 40V12M34 40V30M46 40V18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+  Template: {
+    cls: 'res-art--template',
+    icon: (
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
+        <path d="M2 16h52M14 2v52" stroke="currentColor" strokeWidth="2.5" />
+      </svg>
+    ),
+  },
+  Checklist: {
+    cls: 'res-art--checklist',
+    icon: (
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
+        <path d="M14 18l5 5 9-11M14 36l5 5 9-11M34 21h8M34 39h8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
+      </svg>
+    ),
+  },
+  Worksheet: {
+    cls: 'res-art--template',
+    icon: (
+      <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
+        <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
+        <path d="M12 16h20M12 24h32M12 32h28M12 40h22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
+      </svg>
+    ),
+  },
+};
+
+function ResourceCard({
+  res,
+  downloadLabel,
+  onDownload,
+}: {
+  res: ResourceItem;
+  downloadLabel: string;
+  onDownload: () => void;
+}) {
+  const art = ART[res.type];
   return (
-    <article className="res-card" style={{ ['--hue' as any]: res.hue }}>
-      <div className="res-card-art">
-        <div className="res-card-art-grad"></div>
+    <article className="res-card">
+      <div className={`res-art ${art.cls}`}>
         <div className="res-type-tag">{res.type}</div>
-        <div className="res-card-art-icon">
-          {res.type === 'Ebook' && (
-            <svg width="56" height="64" viewBox="0 0 56 64" fill="none">
-              <rect x="2" y="2" width="52" height="60" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
-              <path d="M12 16h32M12 24h32M12 32h22M12 40h28" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          )}
-          {res.type === 'Infographic' && (
-            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-              <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
-              <path d="M10 40V24M22 40V12M34 40V30M46 40V18" stroke="currentColor" strokeWidth="3" strokeLinecap="round" />
-            </svg>
-          )}
-          {res.type === 'Template' && (
-            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-              <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
-              <path d="M2 16h52M14 2v52" stroke="currentColor" strokeWidth="2.5" />
-            </svg>
-          )}
-          {res.type === 'Checklist' && (
-            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-              <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
-              <path d="M14 18l5 5 9-11M14 36l5 5 9-11M34 21h8M34 39h8" stroke="currentColor" strokeWidth="2.5" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-          )}
-          {res.type === 'Worksheet' && (
-            <svg width="56" height="56" viewBox="0 0 56 56" fill="none">
-              <rect x="2" y="2" width="52" height="52" rx="3" stroke="currentColor" strokeWidth="2.5" fill="rgba(255,255,255,0.1)" />
-              <path d="M12 16h20M12 24h32M12 32h28M12 40h22" stroke="currentColor" strokeWidth="2" strokeLinecap="round" />
-            </svg>
-          )}
-        </div>
+        <div className="res-card-art-icon">{art.icon}</div>
       </div>
-      <div className="res-card-body">
-        <h3 className="res-card-title">{res.title}</h3>
-        <p>{res.desc}</p>
+      <div className="res-body">
+        <h3 className="res-title">{res.title}</h3>
+        <p className="res-desc">{res.desc}</p>
         <div className="res-card-cta">
           <span className="gate">{res.pages}</span>
           <button className="btn btn-link" onClick={onDownload}>
-            {res.gated ? 'Download (free)' : 'Download'}
+            {downloadLabel} →
           </button>
         </div>
       </div>
@@ -65,6 +94,7 @@ function ResourceCard({ res, onDownload }: { res: ResourceItem; onDownload: () =
 }
 
 function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void }) {
+  const { t } = useI18n();
   const nameId = useId();
   const emailId = useId();
   const [email, setEmail] = useState('');
@@ -75,8 +105,8 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
 
   const submit = async (e: React.FormEvent) => {
     e.preventDefault();
-    if (!email || !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) {
-      setErr('Please enter a valid work email.');
+    if (!email || !EMAIL_RE.test(email)) {
+      setErr(t('form.email.invalid'));
       return;
     }
     setErr('');
@@ -100,17 +130,17 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
             <div className="mono small-mono" style={{ color: 'var(--accent-deep)' }}>
               {res.type.toUpperCase()} · FREE
             </div>
-            <h3 className="h3" style={{ marginTop: 4 }}>{res.title}</h3>
-            <p style={{ color: 'var(--ink-3)', marginTop: 4 }}>
-              Tell us where to send it. We&apos;ll add you to our monthly list — unsubscribe any time.
-            </p>
+            <h2 className="gate-title">{t('res.gate.title')}</h2>
+            <p className="gate-sub">{t('res.gate.sub')}</p>
             <form onSubmit={submit} noValidate>
               <div className="field">
-                <label htmlFor={nameId}>Full name</label>
+                <label htmlFor={nameId}>{t('res.gate.name')}</label>
                 <input id={nameId} className="input" value={name} onChange={e => setName(e.target.value)} />
               </div>
               <div className="field">
-                <label htmlFor={emailId}>Work email <span className="req">*</span></label>
+                <label htmlFor={emailId}>
+                  {t('res.gate.email')} <span className="req">*</span>
+                </label>
                 <input
                   id={emailId}
                   className="input"
@@ -121,7 +151,7 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
                 {err && <div className="field-error">{err}</div>}
               </div>
               <button type="submit" className="btn btn-primary btn-lg" disabled={pending}>
-                {pending ? 'Sending…' : `Send me the ${res.type.toLowerCase()}`}
+                {pending ? t('demo.submit.pending') : `${t('res.gate.submit.prefix')} ${res.type.toLowerCase()}`}
               </button>
             </form>
           </>
@@ -133,12 +163,10 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
                 <path d="M6 11.5l3.2 3.2L16 7.6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
               </svg>
             </div>
-            <h3 className="h3">Check your inbox.</h3>
-            <p>
-              We&apos;ve emailed <strong>{email}</strong> with the {res.type.toLowerCase()}.
-            </p>
+            <h3 className="h3">{t('res.gate.done.title')}</h3>
+            <p>{t('res.gate.done.body')}</p>
             <button className="btn btn-ghost" onClick={onClose} style={{ marginTop: 12 }}>
-              Close
+              {t('res.gate.done.close')}
             </button>
           </div>
         )}
@@ -148,6 +176,7 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
 }
 
 function ResourcesPage() {
+  const { t } = useI18n();
   const [cat, setCat] = useState<string>('All');
   const [type, setType] = useState<string>('All types');
   const [gating, setGating] = useState<ResourceItem | null>(null);
@@ -160,59 +189,49 @@ function ResourcesPage() {
     <Page>
       <section className="section res-hero">
         <div className="container">
-          <div className="res-hero-grid">
-            <div>
-              <div className="eyebrow">Resources</div>
-              <h1 className="h-display">
-                Free playbooks, templates,<br />
-                <span className="ink-grad">and field guides.</span>
-              </h1>
-              <p className="lead">
-                Practical material from working with IKEA suppliers. Download what you need — no fluff.
-              </p>
-              <div className="res-filters">
-                {RES_CATS.map(c => (
-                  <button
-                    key={c}
-                    className={`blog-cat ${cat === c ? 'is-active' : ''}`}
-                    onClick={() => setCat(c)}
-                  >
-                    {c}
-                  </button>
-                ))}
-              </div>
-              <div className="res-filters" style={{ marginTop: 8 }}>
-                {RES_TYPES.map(t => (
-                  <button
-                    key={t}
-                    className={`blog-cat ${type === t ? 'is-active' : ''}`}
-                    onClick={() => setType(t)}
-                  >
-                    {t}
-                  </button>
-                ))}
-              </div>
-            </div>
-            <NewsletterBox />
+          <div className="eyebrow">{t('res.eyebrow')}</div>
+          <h1 className="h1" style={{ marginTop: 8 }}>{t('res.title')}</h1>
+          <p className="lead" style={{ marginTop: 12, maxWidth: 600 }}>{t('res.lead')}</p>
+          <div className="res-filters">
+            {RES_CATS.map(c => (
+              <button
+                key={c}
+                className={`blog-cat ${cat === c ? 'is-active' : ''}`}
+                onClick={() => setCat(c)}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+          <div className="res-filters" style={{ marginTop: 8 }}>
+            {RES_TYPES.map(tp => (
+              <button
+                key={tp}
+                className={`blog-cat ${type === tp ? 'is-active' : ''}`}
+                onClick={() => setType(tp)}
+              >
+                {tp}
+              </button>
+            ))}
           </div>
         </div>
       </section>
 
       <section className="section-tight">
         <div className="container">
-          <div className="res-grid">
-            {filtered.map(r => (
-              <ResourceCard
-                key={r.slug}
-                res={r}
-                onDownload={() =>
-                  r.gated ? setGating(r) : window.alert('Download started.')
-                }
-              />
-            ))}
-          </div>
-          {filtered.length === 0 && (
-            <div className="blog-empty">Nothing matches that combination yet.</div>
+          {filtered.length === 0 ? (
+            <div className="blog-empty">{t('res.empty')}</div>
+          ) : (
+            <div className="res-grid">
+              {filtered.map(r => (
+                <ResourceCard
+                  key={r.slug}
+                  res={r}
+                  downloadLabel={r.gated ? t('res.cta.download.free') : t('res.cta.download')}
+                  onDownload={() => (r.gated ? setGating(r) : window.alert('Download started.'))}
+                />
+              ))}
+            </div>
           )}
         </div>
       </section>
