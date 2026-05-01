@@ -1,0 +1,98 @@
+# LeanWise AI — Website
+
+Production marketing site for [leanwise.ai](https://leanwise.ai).
+
+Built with **[TanStack Start](https://tanstack.com/start)** (React 19, TypeScript, Vite). Deploys to **Cloudflare Workers** with static assets on the edge.
+
+## Stack
+
+- **Framework:** TanStack Start (file-based routing, SSR, server functions)
+- **Runtime:** Cloudflare Workers (edge SSR + static assets)
+- **Styling:** Plain CSS (custom design system, no UI lib)
+- **i18n:** Custom hook with EN/VI string tables (localStorage persistence)
+- **Forms:** TanStack Start server functions (Resend or Cloudflare Email Workers)
+- **CMS (planned):** Headless (Sanity / Payload) — blog posts currently live in `src/data/`
+
+## Getting started
+
+```bash
+# Install
+pnpm install   # or npm / bun / yarn
+
+# Develop
+pnpm dev       # → http://localhost:3000
+
+# Type check
+pnpm lint
+
+# Build
+pnpm build
+
+# Preview the prod build locally
+pnpm start
+```
+
+## Deployment — Cloudflare Workers
+
+```bash
+# One-time auth
+npx wrangler login
+
+# Deploy
+pnpm deploy
+```
+
+Configure secrets in the Cloudflare dashboard or via `wrangler secret put RESEND_API_KEY`.
+
+For local Worker testing, copy `.env.example` to `.dev.vars` and run `npx wrangler dev`.
+
+## Project structure
+
+```
+src/
+├── routes/             # File-based routes
+│   ├── __root.tsx      # Layout: nav + footer
+│   ├── index.tsx       # Home
+│   ├── about.tsx
+│   ├── contact.tsx
+│   ├── get-a-demo.tsx
+│   ├── blog.tsx        # /blog
+│   ├── blog.$slug.tsx  # /blog/<slug>
+│   ├── resources.tsx
+│   └── solutions/
+│       ├── connect-mastery.tsx
+│       ├── sop-mastery.tsx
+│       └── operations-mastery.tsx
+├── components/         # Shared UI (Nav, Footer, FinalCTA, etc.)
+├── i18n/               # EN/VI strings + useI18n hook
+├── data/               # Static content (blog posts, resources)
+├── server/             # Server functions (forms, newsletter)
+├── styles/             # Global CSS
+└── router.tsx          # Router setup
+```
+
+## Adding content
+
+### New blog post
+
+Edit `src/data/blog-posts.ts` and append a new post object. The route `/blog/<slug>` resolves automatically.
+
+> When the headless CMS is wired in, this file becomes a fallback / fixture only.
+
+### New resource (ebook / infographic)
+
+Edit `src/data/resources.ts` and add the entry. Place the downloadable PDF in `public/downloads/`.
+
+### New language
+
+Edit `src/i18n/strings.ts`, add the language key alongside `en` and `vi`, and the `LangToggle` will pick it up.
+
+## Bilingual notes
+
+- Default language is **English**; user choice persists in `localStorage`
+- Vietnamese strings live in `src/i18n/strings.ts`
+- The toggle is in the header and the footer
+
+## License
+
+© 2026 LeanWise AI. All rights reserved.

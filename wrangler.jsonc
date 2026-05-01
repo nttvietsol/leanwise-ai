@@ -1,0 +1,34 @@
+{
+  "$schema": "node_modules/wrangler/config-schema.json",
+  "name": "leanwise-ai",
+  "compatibility_date": "2026-04-01",
+  "compatibility_flags": ["nodejs_compat"],
+  "main": ".output/server/index.mjs",
+  "assets": {
+    "directory": ".output/public",
+    "binding": "ASSETS"
+  },
+  "observability": {
+    "enabled": true
+  },
+  /* Bindings — uncomment as you provision them in Cloudflare:
+
+  "vars": {
+    "PUBLIC_GA_ID": "",
+    "PUBLIC_META_PIXEL_ID": ""
+  },
+
+  "d1_databases": [
+    { "binding": "DB", "database_name": "leanwise-ai", "database_id": "TODO" }
+  ],
+
+  "kv_namespaces": [
+    { "binding": "CACHE", "id": "TODO" }
+  ],
+
+  "send_email": [
+    { "name": "MAIL", "destination_address": "support@leanwise.ai" }
+  ]
+
+  */
+}

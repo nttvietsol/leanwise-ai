@@ -1,0 +1,13 @@
+node_modules
+.output
+.wrangler
+dist
+.env
+.env.local
+.env.*.local
+*.log
+.DS_Store
+.vscode/*
+!.vscode/extensions.json
+.idea
+src/routeTree.gen.ts
