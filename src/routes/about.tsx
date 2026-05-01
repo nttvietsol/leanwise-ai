@@ -1,4 +1,4 @@
-import type { ReactNode } from 'react';
+import { useState, type ReactNode } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useI18n } from '~/i18n';
 import { Page, SectionHeader } from '~/components/ui';
@@ -54,10 +54,16 @@ function ValueCard({ icon, name, body }: { icon: ReactNode; name: string; body: 
   );
 }
 
-function FounderCard({ photo, name, role, bio }: { photo: string; name: string; role: string; bio: string }) {
+function FounderCard({ photo, name, role, bio, initials }: {
+  photo: string; name: string; role: string; bio: string; initials: string
+}) {
+  const [imgErr, setImgErr] = React.useState(false)
   return (
     <div className="founder-card">
-      <img className="founder-photo" src={photo} alt={name} />
+      {imgErr
+        ? <div className="founder-avatar-fallback" aria-label={name}>{initials}</div>
+        : <img className="founder-photo" src={photo} alt={name} onError={() => setImgErr(true)} />
+      }
       <div className="founder-info">
         <div className="founder-role">{role}</div>
         <h3 className="founder-name">{name}</h3>
@@ -125,12 +131,14 @@ function AboutPage() {
               name={t('founder1.name')}
               role={t('founder1.role')}
               bio={t('founder1.bio')}
+              initials="TN"
             />
             <FounderCard
               photo="/assets/founder-Trung.png"
               name={t('founder2.name')}
               role={t('founder2.role')}
               bio={t('founder2.bio')}
+              initials="TD"
             />
           </div>
         </div>

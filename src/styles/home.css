@@ -3,10 +3,24 @@
 /* ─── HERO ─── */
 .hero {
   position: relative;
-  padding-top: 56px;
-  padding-bottom: 80px;
+  padding-block: clamp(88px, 12vw, 160px) clamp(64px, 8vw, 120px);
   overflow: hidden;
 }
+.hero::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background-image:
+    linear-gradient(var(--line) 1px, transparent 1px),
+    linear-gradient(90deg, var(--line) 1px, transparent 1px);
+  background-size: 64px 64px;
+  -webkit-mask-image: radial-gradient(ellipse 70% 90% at 50% 0%, black 30%, transparent 80%);
+  mask-image: radial-gradient(ellipse 70% 90% at 50% 0%, black 30%, transparent 80%);
+  opacity: 0.5;
+  pointer-events: none;
+  z-index: 0;
+}
+.hero-inner { position: relative; z-index: 1; }
 .hero-bg {
   position: absolute; inset: 0;
   pointer-events: none;
@@ -26,7 +40,7 @@
   position: absolute;
   top: -200px; right: -200px;
   width: 700px; height: 700px;
-  background: radial-gradient(circle, color-mix(in oklab, var(--accent) 18%, transparent), transparent 60%);
+  background: radial-gradient(ellipse 70% 60% at 70% 50%, color-mix(in oklab, var(--accent) 22%, transparent), transparent 65%);
   filter: blur(40px);
 }
 .hero-inner {
@@ -433,6 +447,7 @@
 .trust-logo:hover { opacity: 1; filter: grayscale(0); }
 
 /* ─── PROBLEM ─── */
+.problem-sec { background: var(--bg); }
 .problem-grid {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
@@ -585,10 +600,9 @@
 /* ─── RESULTS STRIP ─── */
 .results-strip {
   padding: 48px 0;
-  background: var(--ink);
-  color: white;
-  border-top: 1px solid #1F2D3D;
-  border-bottom: 1px solid #1F2D3D;
+  background: var(--bg-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
 }
 .results-grid {
   display: grid;
@@ -612,7 +626,7 @@
 }
 .result-l {
   font-size: 13.5px;
-  color: #B6C2D2;
+  color: var(--muted);
   line-height: 1.4;
   max-width: 220px;
 }

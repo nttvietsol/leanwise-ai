@@ -56,15 +56,31 @@
   margin: 0;
   border-radius: 14px;
   overflow: hidden;
-  border: 1px solid var(--line);
   background: var(--paper);
-  box-shadow: 0 2px 4px rgba(15,45,74,0.04), 0 20px 48px -20px rgba(15,45,74,0.18);
+  border: 1px solid rgba(15,45,74,0.1);
+  box-shadow:
+    0 0 0 1px rgba(255,255,255,0.75) inset,
+    0 4px 8px rgba(15,45,74,0.04),
+    0 28px 64px -20px rgba(15,45,74,0.24);
+}
+.feat-img::before {
+  content: "";
+  display: block;
+  height: 6px;
+  background: linear-gradient(90deg, rgba(20,184,166,0.4) 0%, rgba(20,184,166,0.05) 60%, transparent 100%);
+  border-bottom: 1px solid var(--line);
 }
 .feat-img img {
   display: block;
   width: 100%;
   height: auto;
   object-fit: cover;
+}
+.feat-img--cloud img {
+  object-fit: cover;
+  object-position: center 58%;
+  max-height: 320px;
+  width: 100%;
 }
 
 .feat-copy {

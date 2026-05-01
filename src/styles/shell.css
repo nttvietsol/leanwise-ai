@@ -9,6 +9,7 @@
   backdrop-filter: blur(12px) saturate(1.4);
   -webkit-backdrop-filter: blur(12px) saturate(1.4);
   border-bottom: 1px solid transparent;
+  box-shadow: 0 1px 0 var(--hairline);
   transition: border-color 0.2s, box-shadow 0.2s;
 }
 .nav-scrolled {
@@ -42,7 +43,21 @@
   cursor: pointer;
 }
 .nav-link:hover { background: var(--bg-2); color: var(--ink); }
-.nav-link.is-active { color: var(--ink); background: var(--bg-2); }
+.nav-link.is-active {
+  color: var(--ink);
+  background: var(--bg-2);
+  position: relative;
+}
+.nav-link.is-active::after {
+  content: "";
+  position: absolute;
+  bottom: -2px;
+  left: 12px;
+  right: 12px;
+  height: 2px;
+  background: var(--accent);
+  border-radius: 1px;
+}
 
 .nav-item-drop { position: relative; }
 .dropdown {

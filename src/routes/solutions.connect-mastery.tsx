@@ -24,6 +24,7 @@ function FeatureBlock({
   imgSrc,
   imgAlt,
   flip,
+  figureClassName,
 }: {
   eyebrow: string;
   title: string;
@@ -32,10 +33,11 @@ function FeatureBlock({
   imgSrc: string;
   imgAlt: string;
   flip?: boolean;
+  figureClassName?: string;
 }) {
   return (
     <div className={`feat-block${flip ? ' feat-block--flip' : ''}`}>
-      <figure className="feat-img">
+      <figure className={`feat-img${figureClassName ? ' ' + figureClassName : ''}`}>
         <img src={imgSrc} alt={imgAlt} loading="lazy" />
       </figure>
       <div className="feat-copy">
@@ -133,6 +135,7 @@ function ConnectMasteryPage() {
               ]}
               imgSrc="/assets/cloud-process.png"
               imgAlt="Cloud-based processing"
+              figureClassName="feat-img--cloud"
             />
           </div>
         </div>

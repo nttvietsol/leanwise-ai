@@ -9,13 +9,13 @@
 
 .origin-stat-card {
   position: relative;
-  background: var(--ink);
+  background: var(--paper);
   border-radius: 14px;
   padding: 40px;
   overflow: hidden;
   isolation: isolate;
-  border: 1px solid var(--ink-3);
-  color: var(--paper);
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--accent);
   display: flex;
   flex-direction: column;
   gap: 16px;
@@ -25,18 +25,14 @@
   position: absolute;
   inset: 0;
   z-index: -1;
-  background:
-    linear-gradient(rgba(255,255,255,0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(255,255,255,0.04) 1px, transparent 1px);
-  background-size: 32px 32px;
-  mask-image: radial-gradient(ellipse 70% 70% at 100% 0%, black, transparent 60%);
+  background: radial-gradient(ellipse 80% 80% at 100% 0%, var(--accent-soft), transparent 60%);
 }
 
 .origin-stat-text {
   font-size: 19px;
   line-height: 1.45;
   letter-spacing: -0.018em;
-  color: var(--paper);
+  color: var(--ink-2);
   margin: 0;
 }
 
@@ -45,15 +41,15 @@
 .origin-stat-meta {
   display: grid;
   grid-template-columns: repeat(3, 1fr);
-  border-top: 1px solid var(--ink-3);
+  border-top: 1px solid var(--line);
   padding-top: 20px;
   margin-top: 8px;
   font-family: var(--font-mono);
 }
 
 .origin-stat-meta > div { display: flex; flex-direction: column; gap: 2px; }
-.origin-stat-meta strong { font-size: 24px; color: var(--paper); font-weight: 500; letter-spacing: -0.02em; display: block; }
-.origin-stat-meta span { font-size: 10.5px; color: var(--ink-6); letter-spacing: 0.04em; text-transform: uppercase; display: block; }
+.origin-stat-meta strong { font-size: 24px; color: var(--ink); font-weight: 500; letter-spacing: -0.02em; display: block; }
+.origin-stat-meta span { font-size: 10.5px; color: var(--muted); letter-spacing: 0.04em; text-transform: uppercase; display: block; }
 
 @media (max-width: 880px) {
   .origin-grid { grid-template-columns: 1fr; gap: 40px; }
@@ -117,11 +113,21 @@
   overflow: hidden;
 }
 
-.founder-photo {
-  aspect-ratio: 1;
+.founder-photo { width: 100%; aspect-ratio: 1; object-fit: cover; display: block; }
+
+.founder-avatar-fallback {
   width: 100%;
-  object-fit: cover;
-  display: block;
+  aspect-ratio: 1;
+  background: linear-gradient(145deg, var(--teal) 0%, var(--navy-2) 100%);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: clamp(52px, 9vw, 88px);
+  font-weight: 700;
+  color: rgba(255,255,255,0.92);
+  letter-spacing: -0.04em;
+  font-family: var(--font-sans);
+  user-select: none;
 }
 
 .founder-info {

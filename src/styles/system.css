@@ -84,6 +84,9 @@
 
   /* Shadows */
   --shadow-soft: 0 2px 8px rgba(11, 27, 43, 0.06);
+
+  /* Border aliases */
+  --hairline: var(--line);
 }
 
 * { box-sizing: border-box; }
@@ -109,31 +112,31 @@ img { max-width: 100%; display: block; }
 /* Type scale */
 .eyebrow {
   font-family: var(--font-mono);
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.08em;
+  font-size: 11.5px;
+  font-weight: 600;
+  letter-spacing: 0.1em;
   text-transform: uppercase;
-  color: var(--accent-deep);
+  color: var(--accent);
 }
 .h-display {
-  font-size: clamp(40px, 5.6vw, 76px);
-  line-height: 1.02;
-  letter-spacing: -0.035em;
+  font-size: clamp(44px, 6vw, 92px);
+  line-height: 0.95;
+  letter-spacing: -0.04em;
   font-weight: 600;
   color: var(--ink);
   margin: 0;
   text-wrap: balance;
 }
 .h1 {
-  font-size: clamp(36px, 4.5vw, 60px);
-  line-height: 1.05;
-  letter-spacing: -0.03em;
+  font-size: clamp(34px, 5vw, 68px);
+  line-height: 1.0;
+  letter-spacing: -0.035em;
   font-weight: 600;
   margin: 0;
   text-wrap: balance;
 }
 .h2 {
-  font-size: clamp(28px, 3.2vw, 44px);
+  font-size: clamp(26px, 3.5vw, 50px);
   line-height: 1.08;
   letter-spacing: -0.025em;
   font-weight: 600;
@@ -148,8 +151,8 @@ img { max-width: 100%; display: block; }
   margin: 0;
 }
 .lead {
-  font-size: clamp(16px, 1.3vw, 19px);
-  line-height: 1.55;
+  font-size: clamp(17px, 1.7vw, 22px);
+  line-height: 1.65;
   color: var(--ink-3);
   margin: 0;
   text-wrap: pretty;
@@ -170,8 +173,8 @@ img { max-width: 100%; display: block; }
   margin: 0 auto;
   padding-inline: var(--pad-x);
 }
-.section { padding-block: clamp(64px, 9vw, 128px); }
-.section-tight { padding-block: clamp(48px, 6vw, 80px); }
+.section { padding-block: clamp(72px, 10vw, 140px); }
+.section-tight { padding-block: clamp(52px, 7vw, 96px); }
 
 /* Buttons */
 .btn {
@@ -190,11 +193,27 @@ img { max-width: 100%; display: block; }
   white-space: nowrap;
 }
 .btn-primary {
-  background: var(--cta);
+  background: linear-gradient(
+    160deg,
+    color-mix(in oklab, var(--cta) 90%, var(--teal)) 0%,
+    var(--cta) 100%
+  );
   color: white;
-  box-shadow: 0 1px 0 rgba(255,255,255,0.18) inset, 0 1px 2px rgba(15, 45, 74, 0.4);
+  box-shadow: 0 1px 0 rgba(255,255,255,0.08) inset, 0 3px 10px rgba(15,45,74,0.22);
 }
-.btn-primary:hover { background: var(--cta-deep); transform: translateY(-1px); }
+.btn-primary:hover {
+  background: linear-gradient(
+    160deg,
+    var(--cta) 0%,
+    var(--cta-deep) 100%
+  );
+  box-shadow: 0 1px 0 rgba(255,255,255,0.1) inset, 0 5px 14px rgba(15,45,74,0.28);
+  transform: translateY(-1px);
+}
+.btn-primary:active {
+  transform: translateY(0);
+  box-shadow: 0 1px 0 rgba(0,0,0,0.1) inset;
+}
 .btn-dark {
   background: var(--ink);
   color: white;
@@ -325,15 +344,21 @@ img { max-width: 100%; display: block; }
   border: 1px solid var(--line);
   border-radius: var(--r-lg);
   padding: 28px;
-  transition: border-color 0.2s, transform 0.2s, box-shadow 0.2s;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease, transform 0.18s ease;
 }
 .card:hover {
-  border-color: color-mix(in oklab, var(--accent) 30%, var(--line));
+  border-color: rgba(20,184,166,0.28);
+  box-shadow: 0 0 0 1px rgba(20,184,166,0.1), var(--shadow-2);
+  transform: translateY(-1px);
 }
 .card-soft {
   background: var(--bg);
   border: 1px solid var(--line-2);
   border-radius: var(--r-lg);
+}
+.card-featured {
+  border-color: rgba(20,184,166,0.25);
+  background: linear-gradient(145deg, rgba(20,184,166,0.03) 0%, transparent 50%);
 }
 
 /* Divider */
