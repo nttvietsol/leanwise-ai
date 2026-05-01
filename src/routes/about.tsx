@@ -1,87 +1,95 @@
+import type { ReactNode } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
+import { useI18n } from '~/i18n';
 import { Page, SectionHeader } from '~/components/ui';
-import { FinalCTA } from '~/components/final-cta';
 
 export const Route = createFileRoute('/about')({
   component: AboutPage,
   head: () => ({ meta: [{ title: 'About — LeanWise AI' }] }),
 });
 
-function ValueCard({ num, name, body }: { num: string; name: string; body: string }) {
+function ShieldIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
+    </svg>
+  );
+}
+
+function TrendingUpIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
+      <polyline points="17 6 23 6 23 12"/>
+    </svg>
+  );
+}
+
+function TargetIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="12" cy="12" r="10"/>
+      <circle cx="12" cy="12" r="6"/>
+      <circle cx="12" cy="12" r="2"/>
+    </svg>
+  );
+}
+
+function HandshakeIcon() {
+  return (
+    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <path d="M9 11l3 3L22 4"/>
+      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
+    </svg>
+  );
+}
+
+function ValueCard({ icon, name, body }: { icon: ReactNode; name: string; body: string }) {
   return (
     <div className="value-card">
-      <div className="value-num mono">{num}</div>
+      <div className="value-icon">{icon}</div>
       <h3 className="h3">{name}</h3>
       <p>{body}</p>
     </div>
   );
 }
 
-function FounderCard({
-  name, role, initials, bullets, hue,
-}: {
-  name: string;
-  role: string;
-  initials: string;
-  bullets: string[];
-  hue: number;
-}) {
+function FounderCard({ photo, name, role, bio }: { photo: string; name: string; role: string; bio: string }) {
   return (
     <div className="founder-card">
-      <div className="founder-photo" style={{ ['--hue' as any]: hue }}>
-        <div className="founder-photo-grad"></div>
-        <div className="founder-initials">{initials}</div>
-        <div className="founder-photo-meta mono">photo · 1:1</div>
-      </div>
+      <img className="founder-photo" src={photo} alt={name} />
       <div className="founder-info">
-        <div className="founder-role mono">{role}</div>
+        <div className="founder-role">{role}</div>
         <h3 className="founder-name">{name}</h3>
-        <ul className="founder-bullets">
-          {bullets.map((b, i) => (
-            <li key={i}>
-              <span className="bullet-dot"></span>
-              {b}
-            </li>
-          ))}
-        </ul>
+        <p className="lead">{bio}</p>
       </div>
     </div>
   );
 }
 
 function AboutPage() {
+  const { t } = useI18n();
   return (
     <Page>
-      <section className="section about-origin">
-        <div className="container">
-          <div className="about-origin-grid">
-            <div className="about-origin-copy">
-              <div className="eyebrow">Where we come from</div>
-              <h1 className="h-display">
-                10+ Years.<br />Thousands of Hours.<br />
-                <span className="ink-grad">One Mission.</span>
-              </h1>
-              <div className="about-origin-paras">
-                <p className="lead">
-                  Over more than 10 years working directly with IKEA suppliers, we saw that improving quality, optimizing delivery, and reducing costs are always top priorities for factories. To get there, automation and lean manufacturing have been the go-to choices.
-                </p>
-                <p className="lead">
-                  Now, with AI, factories can go even further — working not just more efficiently, but more intelligently. LeanWise AI was founded with the mission to combine the power of AI and Lean Manufacturing principles to eliminate waste, optimize processes, and boost tangible productivity for manufacturing plants.
-                </p>
-              </div>
+      <section className="section section-tight">
+        <div className="container-wide">
+          <div className="origin-grid">
+            <div>
+              <SectionHeader
+                eyebrow={t('about.eyebrow')}
+                title={t('about.title')}
+                titleClass="h1"
+              />
+              <p className="lead" style={{ marginTop: 16 }}>{t('about.lead')}</p>
             </div>
-            <div className="vision-card">
-              <div className="vision-bg" aria-hidden="true"></div>
-              <div className="vision-inner">
-                <div className="eyebrow" style={{ color: 'var(--accent)' }}>Our vision</div>
-                <p className="vision-text">
-                  To become a trusted partner in enabling <strong>1,000+ smart factories</strong> — where AI technology and Lean thinking operate in harmony to achieve maximum efficiency.
-                </p>
-                <div className="vision-meta">
-                  <div><strong>1,000+</strong><span>Target factories</span></div>
-                  <div><strong>SEA</strong><span>Initial focus</span></div>
-                  <div><strong>2026</strong><span>Founded</span></div>
-                </div>
+            <div className="origin-stat-card">
+              <div className="origin-stat-bg" aria-hidden="true"></div>
+              <div className="small-mono" style={{ color: 'var(--accent)' }}>{t('vision.eyebrow')} / 02</div>
+              <p className="origin-stat-text">{t('vision.text')}</p>
+              <div className="origin-stat-meta">
+                <div><strong>{t('vision.stat1')}</strong><span>{t('vision.stat1.l')}</span></div>
+                <div><strong>{t('vision.stat2')}</strong><span>{t('vision.stat2.l')}</span></div>
+                <div><strong>{t('vision.stat3')}</strong><span>{t('vision.stat3.l')}</span></div>
               </div>
             </div>
           </div>
@@ -89,69 +97,57 @@ function AboutPage() {
       </section>
 
       <section className="section values-sec">
-        <div className="container">
+        <div className="container-wide">
           <SectionHeader
-            eyebrow="What we stand for"
-            title="The Values We Truly Believe In"
-            sub="These aren't just words on a wall — they guide every decision we make and every product we build."
+            eyebrow={t('values.eyebrow')}
+            title={t('values.title')}
             align="center"
           />
           <div className="values-grid">
-            <ValueCard
-              num="01"
-              name="Integrity"
-              body="Trust is the foundation of any lasting relationship. We keep our word, stay consistent between what we say and what we do, and hold ourselves to the highest standards of legal and ethical conduct — because we believe this is how sustainable partnerships are built."
-            />
-            <ValueCard
-              num="02"
-              name="Continuous Improvement"
-              body="Rooted in the Lean Manufacturing philosophy, we are committed to continuously improving — making our products better, more practical, and more valuable for our customers, our partners, and ourselves."
-            />
-            <ValueCard
-              num="03"
-              name="Responsibility"
-              body="We take full responsibility for the quality of every product and service we deliver. We also choose to use our time and energy with care and intention."
-            />
-            <ValueCard
-              num="04"
-              name="Collaboration"
-              body="We work towards win-win outcomes for everyone involved and support one another along the way."
-            />
+            <ValueCard icon={<ShieldIcon />} name={t('values.1.title')} body={t('values.1.body')} />
+            <ValueCard icon={<TrendingUpIcon />} name={t('values.2.title')} body={t('values.2.body')} />
+            <ValueCard icon={<TargetIcon />} name={t('values.3.title')} body={t('values.3.body')} />
+            <ValueCard icon={<HandshakeIcon />} name={t('values.4.title')} body={t('values.4.body')} />
           </div>
         </div>
       </section>
 
-      <section className="section team-sec">
-        <div className="container">
-          <SectionHeader eyebrow="Founding team" title="The People Behind LeanWise AI" align="center" />
+      <section className="section">
+        <div className="container-wide">
+          <SectionHeader
+            eyebrow={t('team.eyebrow')}
+            title={t('team.title')}
+            align="center"
+          />
           <div className="team-grid">
             <FounderCard
-              name="Truong Xuan Truong"
-              role="Founder & CEO"
-              initials="TX"
-              hue={180}
-              bullets={[
-                '10+ years as a Senior Production Engineer — led projects with a team of 20+ specialists across 8 countries in the IKEA supply chain',
-                'Directly resolved hundreds of CONNECT compliance issues — with deep understanding from both the factory and the IKEA side',
-                'Architect of CONNECT Mastery System — built from real problems he personally experienced on the factory floor',
-              ]}
+              photo="/assets/founder-Truong.png"
+              name={t('founder1.name')}
+              role={t('founder1.role')}
+              bio={t('founder1.bio')}
             />
             <FounderCard
-              name="Nguyen Thanh Trung"
-              role="Co-Founder & CTO"
-              initials="NT"
-              hue={220}
-              bullets={[
-                '15+ years in engineering — including 5+ years specializing in AI, automation, and digitalization in manufacturing environments',
-                'Senior leader who managed a team of 25+ engineers and delivered 15+ enterprise-level automation projects at Bosch',
-                'Proven that AI drives real financial results — €1.2M+ in annual savings achieved at Bosch through AI-powered solutions',
-              ]}
+              photo="/assets/founder-Trung.png"
+              name={t('founder2.name')}
+              role={t('founder2.role')}
+              bio={t('founder2.bio')}
             />
           </div>
         </div>
       </section>
 
-      <FinalCTA />
+      <section className="section">
+        <div className="container-wide">
+          <div className="final-cta-card about-vision-card">
+            <div className="final-cta-bg" aria-hidden="true"></div>
+            <div className="final-cta-inner">
+              <div className="eyebrow" style={{ color: 'var(--accent)' }}>{t('about.vision.eyebrow')}</div>
+              <h2 className="h1">{t('about.vision.title')}</h2>
+              <p className="lead">{t('about.vision.body')}</p>
+            </div>
+          </div>
+        </div>
+      </section>
     </Page>
   );
 }
