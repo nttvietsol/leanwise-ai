@@ -3,11 +3,11 @@
   "name": "leanwise-ai",
   "compatibility_date": "2026-04-01",
   "compatibility_flags": ["nodejs_compat"],
-  "main": ".output/server/index.mjs",
-  "assets": {
-    "directory": ".output/public",
-    "binding": "ASSETS"
-  },
+  /**
+   * `main` and `assets` are populated by @cloudflare/vite-plugin during build.
+   * The plugin writes the worker bundle to `dist/leanwise-ai/` and reads this
+   * file to drive `wrangler deploy`. Override below only if you need to.
+   */
   "observability": {
     "enabled": true
   },
@@ -15,7 +15,9 @@
 
   "vars": {
     "PUBLIC_GA_ID": "",
-    "PUBLIC_META_PIXEL_ID": ""
+    "PUBLIC_META_PIXEL_ID": "",
+    "RESEND_FROM": "hello@leanwise.ai",
+    "RESEND_TO": "support@leanwise.ai"
   },
 
   "d1_databases": [
@@ -30,5 +32,9 @@
     { "name": "MAIL", "destination_address": "support@leanwise.ai" }
   ]
 
+  */
+
+  /* Secrets (set via `wrangler secret put RESEND_API_KEY`):
+     - RESEND_API_KEY
   */
 }

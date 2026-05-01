@@ -8,16 +8,29 @@ type SendInput = {
   replyTo?: string;
 };
 
+/**
+ * Read an env var across runtimes:
+ *  - Cloudflare Workers: globalThis.process.env is provided by `nodejs_compat`
+ *    for `vars` declared in wrangler.jsonc; secrets land there too via the
+ *    `@cloudflare/vite-plugin` adapter.
+ *  - Node dev: process.env directly.
+ *  - Browser: never reached for server-only code paths.
+ */
+function envVar(key: string): string | undefined {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const proc = (globalThis as any).process as
+    | { env?: Record<string, string | undefined> }
+    | undefined;
+  return proc?.env?.[key];
+}
+
 async function sendEmail(input: SendInput): Promise<void> {
-  // Prefer Resend if RESEND_API_KEY is set; otherwise log + no-op.
-  // (Cloudflare Email Workers binding is also possible via env.MAIL — wire as needed.)
-  const apiKey = (globalThis as any).process?.env?.RESEND_API_KEY as string | undefined;
-  const from = (globalThis as any).process?.env?.RESEND_FROM as string | undefined;
-  const to = (globalThis as any).process?.env?.RESEND_TO as string | undefined;
+  const apiKey = envVar('RESEND_API_KEY');
+  const from = envVar('RESEND_FROM');
+  const to = envVar('RESEND_TO');
 
   if (!apiKey || !from || !to) {
     // Dev fallback: log to server console; production should be configured.
-    // eslint-disable-next-line no-console
     console.log('[forms] Email not sent (RESEND_* not configured):', input);
     return;
   }
@@ -45,12 +58,14 @@ async function sendEmail(input: SendInput): Promise<void> {
 
 /* ─────────── Contact form ─────────── */
 export const submitContact = createServerFn({ method: 'POST' })
-  .validator((d: { name: string; email: string; subject?: string; message: string }) => {
-    if (!d.name?.trim()) throw new Error('Name is required');
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    if (!d.message?.trim()) throw new Error('Message is required');
-    return d;
-  })
+  .validator(
+    (d: { name: string; email: string; subject?: string; message: string }) => {
+      if (!d.name?.trim()) throw new Error('Name is required');
+      if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
+      if (!d.message?.trim()) throw new Error('Message is required');
+      return d;
+    },
+  )
   .handler(async ({ data }) => {
     await sendEmail({
       subject: `[Contact] ${data.subject?.trim() || `Message from ${data.name}`}`,
@@ -78,7 +93,8 @@ export const submitDemo = createServerFn({ method: 'POST' })
     }) => {
       if (!d.name?.trim()) throw new Error('Name is required');
       if (!d.company?.trim()) throw new Error('Company is required');
-      if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid work email is required');
+      if (!d.email || !EMAIL_RE.test(d.email))
+        throw new Error('Valid work email is required');
       return d;
     },
   )
@@ -123,8 +139,6 @@ export const subscribeNewsletter = createServerFn({ method: 'POST' })
     return d;
   })
   .handler(async ({ data }) => {
-    // TODO: wire to Mailchimp / Buttondown / Resend audience.
-    // For now, deliver to inbox so we don't lose signups.
     await sendEmail({
       subject: `[Newsletter] New subscriber — ${data.email}`,
       bodyText: `New newsletter subscription: ${data.email}\n`,

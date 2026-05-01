@@ -7,23 +7,25 @@
     "dev": "vite dev --port 3000",
     "build": "vite build",
     "start": "vite preview",
+    "wrangler:dev": "wrangler dev",
     "deploy": "vite build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv",
     "lint": "tsc --noEmit"
   },
   "dependencies": {
-    "@tanstack/react-router": "^1.95.0",
-    "@tanstack/react-start": "^1.95.0",
+    "@tanstack/react-router": "^1.131.0",
+    "@tanstack/react-start": "^1.131.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
-    "@cloudflare/vite-plugin": "^1.0.0",
+    "@cloudflare/vite-plugin": "^1.13.0",
+    "@cloudflare/workers-types": "^4.20260401.0",
     "@types/react": "^19.0.0",
     "@types/react-dom": "^19.0.0",
     "@vitejs/plugin-react": "^4.3.4",
     "typescript": "^5.7.2",
-    "vite": "^6.0.0",
+    "vite": "^6.3.0",
     "vite-tsconfig-paths": "^5.1.4",
     "wrangler": "^3.99.0"
   }

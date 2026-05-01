@@ -1,4 +1,9 @@
-import { createRootRoute, HeadContent, Outlet, Scripts } from '@tanstack/react-router';
+import {
+  createRootRoute,
+  HeadContent,
+  Outlet,
+  Scripts,
+} from '@tanstack/react-router';
 import type { ReactNode } from 'react';
 import { Nav } from '~/components/nav';
 import { Footer } from '~/components/footer';
@@ -17,9 +22,7 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      {
-        title: 'LeanWise AI — Lean Thinking. AI Speed. Real Results.',
-      },
+      { title: 'LeanWise AI — Lean Thinking. AI Speed. Real Results.' },
       {
         name: 'description',
         content:
@@ -42,7 +45,18 @@ export const Route = createRootRoute({
     ],
   }),
   shellComponent: RootDocument,
+  component: RootLayout,
 });
+
+function RootLayout() {
+  return (
+    <div className="app">
+      <Nav />
+      <Outlet />
+      <Footer />
+    </div>
+  );
+}
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
@@ -51,11 +65,6 @@ function RootDocument({ children }: { children: ReactNode }) {
         <HeadContent />
       </head>
       <body>
-        <div className="app">
-          <Nav />
-          <Outlet />
-          <Footer />
-        </div>
         {children}
         <Scripts />
       </body>
