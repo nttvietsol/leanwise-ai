@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Page } from '~/components/ui';
 import { submitDemo } from '~/server/forms';
@@ -9,6 +9,13 @@ export const Route = createFileRoute('/get-a-demo')({
 });
 
 function DemoForm() {
+  const ids = {
+    name: useId(),
+    company: useId(),
+    email: useId(),
+    phone: useId(),
+    interest: useId(),
+  };
   const [data, setData] = useState({
     name: '',
     company: '',
@@ -67,30 +74,31 @@ function DemoForm() {
     <form className="form-card" onSubmit={submit} noValidate>
       <div className="form-grid-2">
         <div className="field">
-          <label>Full name <span className="req">*</span></label>
-          <input className="input" value={data.name} onChange={e => set('name', e.target.value)} />
+          <label htmlFor={ids.name}>Full name <span className="req">*</span></label>
+          <input id={ids.name} className="input" value={data.name} onChange={e => set('name', e.target.value)} />
           {errs.name && <div className="field-error">{errs.name}</div>}
         </div>
         <div className="field">
-          <label>Company <span className="req">*</span></label>
-          <input className="input" value={data.company} onChange={e => set('company', e.target.value)} />
+          <label htmlFor={ids.company}>Company <span className="req">*</span></label>
+          <input id={ids.company} className="input" value={data.company} onChange={e => set('company', e.target.value)} />
           {errs.company && <div className="field-error">{errs.company}</div>}
         </div>
       </div>
       <div className="form-grid-2">
         <div className="field">
-          <label>Work email <span className="req">*</span></label>
-          <input className="input" type="email" value={data.email} onChange={e => set('email', e.target.value)} />
+          <label htmlFor={ids.email}>Work email <span className="req">*</span></label>
+          <input id={ids.email} className="input" type="email" value={data.email} onChange={e => set('email', e.target.value)} />
           {errs.email && <div className="field-error">{errs.email}</div>}
         </div>
         <div className="field">
-          <label>Phone</label>
-          <input className="input" type="tel" value={data.phone} onChange={e => set('phone', e.target.value)} placeholder="Optional" />
+          <label htmlFor={ids.phone}>Phone</label>
+          <input id={ids.phone} className="input" type="tel" value={data.phone} onChange={e => set('phone', e.target.value)} placeholder="Optional" />
         </div>
       </div>
       <div className="field">
-        <label>What would you like to see?</label>
+        <label htmlFor={ids.interest}>What would you like to see?</label>
         <select
+          id={ids.interest}
           className="select"
           value={data.interest}
           onChange={e => set('interest', e.target.value)}

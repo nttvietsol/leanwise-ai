@@ -1,7 +1,9 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { joinWaitlist } from '~/server/forms';
 
 export function WaitlistForm({ product }: { product: string }) {
+  const emailId = useId();
+  const companyId = useId();
   const [email, setEmail] = useState('');
   const [company, setCompany] = useState('');
   const [done, setDone] = useState(false);
@@ -44,8 +46,9 @@ export function WaitlistForm({ product }: { product: string }) {
   return (
     <form className="waitlist-form" onSubmit={submit} noValidate>
       <div className="field">
-        <label>Work email <span className="req">*</span></label>
+        <label htmlFor={emailId}>Work email <span className="req">*</span></label>
         <input
+          id={emailId}
           className="input"
           type="email"
           value={email}
@@ -54,8 +57,9 @@ export function WaitlistForm({ product }: { product: string }) {
         />
       </div>
       <div className="field">
-        <label>Company</label>
+        <label htmlFor={companyId}>Company</label>
         <input
+          id={companyId}
           className="input"
           value={company}
           onChange={e => setCompany(e.target.value)}

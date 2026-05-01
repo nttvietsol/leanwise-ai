@@ -1,7 +1,8 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { subscribeNewsletter } from '~/server/forms';
 
 export function NewsletterBox() {
+  const emailId = useId();
   const [email, setEmail] = useState('');
   const [done, setDone] = useState(false);
   const [err, setErr] = useState('');
@@ -41,14 +42,16 @@ export function NewsletterBox() {
   }
 
   return (
-    <form className="newsletter-box" onSubmit={submit}>
+    <form className="newsletter-box" onSubmit={submit} noValidate>
       <div className="newsletter-h">
         <div className="mono small-mono">NEWSLETTER</div>
         <strong>One email a month. No fluff.</strong>
         <span>Lean + AI tactics for factory leaders.</span>
       </div>
       <div className="newsletter-row">
+        <label htmlFor={emailId} className="visually-hidden">Email</label>
         <input
+          id={emailId}
           className="input"
           type="email"
           placeholder="you@factory.com"

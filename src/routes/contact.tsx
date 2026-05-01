@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Page } from '~/components/ui';
 import { submitContact } from '~/server/forms';
@@ -9,6 +9,12 @@ export const Route = createFileRoute('/contact')({
 });
 
 function ContactForm() {
+  const ids = {
+    name: useId(),
+    email: useId(),
+    subject: useId(),
+    message: useId(),
+  };
   const [data, setData] = useState({ name: '', email: '', subject: '', message: '' });
   const [errs, setErrs] = useState<Record<string, string>>({});
   const [done, setDone] = useState(false);
@@ -60,22 +66,22 @@ function ContactForm() {
   return (
     <form className="form-card" onSubmit={submit} noValidate>
       <div className="field">
-        <label>Full name <span className="req">*</span></label>
-        <input className="input" value={data.name} onChange={e => set('name', e.target.value)} />
+        <label htmlFor={ids.name}>Full name <span className="req">*</span></label>
+        <input id={ids.name} className="input" value={data.name} onChange={e => set('name', e.target.value)} />
         {errs.name && <div className="field-error">{errs.name}</div>}
       </div>
       <div className="field">
-        <label>Email <span className="req">*</span></label>
-        <input className="input" type="email" value={data.email} onChange={e => set('email', e.target.value)} />
+        <label htmlFor={ids.email}>Email <span className="req">*</span></label>
+        <input id={ids.email} className="input" type="email" value={data.email} onChange={e => set('email', e.target.value)} />
         {errs.email && <div className="field-error">{errs.email}</div>}
       </div>
       <div className="field">
-        <label>Subject</label>
-        <input className="input" value={data.subject} onChange={e => set('subject', e.target.value)} placeholder="Optional" />
+        <label htmlFor={ids.subject}>Subject</label>
+        <input id={ids.subject} className="input" value={data.subject} onChange={e => set('subject', e.target.value)} placeholder="Optional" />
       </div>
       <div className="field">
-        <label>Message <span className="req">*</span></label>
-        <textarea className="textarea" value={data.message} onChange={e => set('message', e.target.value)} />
+        <label htmlFor={ids.message}>Message <span className="req">*</span></label>
+        <textarea id={ids.message} className="textarea" value={data.message} onChange={e => set('message', e.target.value)} />
         {errs.message && <div className="field-error">{errs.message}</div>}
       </div>
       <button type="submit" className="btn btn-primary btn-lg" disabled={pending}>

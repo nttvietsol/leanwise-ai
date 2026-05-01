@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useId, useState } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { Page } from '~/components/ui';
 import { FinalCTA } from '~/components/final-cta';
@@ -65,6 +65,8 @@ function ResourceCard({ res, onDownload }: { res: ResourceItem; onDownload: () =
 }
 
 function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void }) {
+  const nameId = useId();
+  const emailId = useId();
   const [email, setEmail] = useState('');
   const [name, setName] = useState('');
   const [done, setDone] = useState(false);
@@ -104,12 +106,13 @@ function GateModal({ res, onClose }: { res: ResourceItem; onClose: () => void })
             </p>
             <form onSubmit={submit} noValidate>
               <div className="field">
-                <label>Full name</label>
-                <input className="input" value={name} onChange={e => setName(e.target.value)} />
+                <label htmlFor={nameId}>Full name</label>
+                <input id={nameId} className="input" value={name} onChange={e => setName(e.target.value)} />
               </div>
               <div className="field">
-                <label>Work email <span className="req">*</span></label>
+                <label htmlFor={emailId}>Work email <span className="req">*</span></label>
                 <input
+                  id={emailId}
                   className="input"
                   type="email"
                   value={email}

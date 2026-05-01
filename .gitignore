@@ -11,3 +11,6 @@ dist
 !.vscode/extensions.json
 .idea
 src/routeTree.gen.ts
+playwright-report
+test-results
+.vitest

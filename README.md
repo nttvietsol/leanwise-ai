@@ -93,6 +93,49 @@ Edit `src/i18n/strings.ts`, add the language key alongside `en` and `vi`, and th
 - Vietnamese strings live in `src/i18n/strings.ts`
 - The toggle is in the header and the footer
 
+## Tests
+
+Real tests, no mocks. Two layers:
+
+- **Unit (Vitest)** — pure logic (`src/i18n/strings.ts` translate fallback, email regex used by `src/server/forms.ts`).
+- **E2E (Playwright)** — drives a real browser against a real running server (the dev server by default; or a deployed URL via `BASE_URL`). Covers every page, every form, every CTA path, the EN/VI toggle, blog filtering + search, the resource gate modal, the newsletter, SEO meta, sitemap and robots.
+
+```bash
+# Everything (unit + e2e against vite dev)
+pnpm test
+
+# Just unit
+pnpm test:unit
+
+# Just e2e (boots vite dev for you)
+pnpm test:e2e
+
+# E2E against the deployed Worker
+pnpm test:e2e:remote
+```
+
+Test layout:
+
+```
+tests/
+├── unit/
+│   ├── i18n.test.ts
+│   └── validators.test.ts
+└── e2e/
+    ├── home.spec.ts
+    ├── about.spec.ts
+    ├── connect-mastery.spec.ts
+    ├── sop-and-ops-mastery.spec.ts
+    ├── contact.spec.ts
+    ├── get-a-demo.spec.ts
+    ├── blog.spec.ts
+    ├── resources.spec.ts
+    ├── nav.spec.ts
+    ├── i18n.spec.ts
+    ├── seo.spec.ts
+    └── newsletter.spec.ts
+```
+
 ## License
 
 © 2026 LeanWise AI. All rights reserved.
