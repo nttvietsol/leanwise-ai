@@ -67,7 +67,7 @@
   content: "";
   display: block;
   height: 6px;
-  background: linear-gradient(90deg, rgba(20,184,166,0.4) 0%, rgba(20,184,166,0.05) 60%, transparent 100%);
+  background: linear-gradient(90deg, color-mix(in oklab, var(--accent) 40%, transparent) 0%, color-mix(in oklab, var(--accent) 5%, transparent) 60%, transparent 100%);
   border-bottom: 1px solid var(--line);
 }
 .feat-img img {

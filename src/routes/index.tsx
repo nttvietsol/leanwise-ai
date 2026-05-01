@@ -205,7 +205,7 @@ function HomePage() {
       <TrustBar />
 
       {/* PROBLEM */}
-      <section className="section">
+      <section className="section problem-sec">
         <div className="container">
           <SectionHeader
             eyebrow="The compliance reality"

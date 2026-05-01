@@ -1,4 +1,4 @@
-import { useState, type ReactNode } from 'react';
+import { type ReactNode } from 'react';
 import { createFileRoute } from '@tanstack/react-router';
 import { useI18n } from '~/i18n';
 import { Page, SectionHeader } from '~/components/ui';
@@ -54,16 +54,12 @@ function ValueCard({ icon, name, body }: { icon: ReactNode; name: string; body: 
   );
 }
 
-function FounderCard({ photo, name, role, bio, initials }: {
+function FounderCard({ photo: _photo, name, role, bio, initials }: {
   photo: string; name: string; role: string; bio: string; initials: string
 }) {
-  const [imgErr, setImgErr] = React.useState(false)
   return (
     <div className="founder-card">
-      {imgErr
-        ? <div className="founder-avatar-fallback" aria-label={name}>{initials}</div>
-        : <img className="founder-photo" src={photo} alt={name} onError={() => setImgErr(true)} />
-      }
+      <div className="founder-avatar-fallback" aria-label={name}>{initials}</div>
       <div className="founder-info">
         <div className="founder-role">{role}</div>
         <h3 className="founder-name">{name}</h3>
