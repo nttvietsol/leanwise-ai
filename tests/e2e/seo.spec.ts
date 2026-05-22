@@ -34,15 +34,19 @@ test.describe('SEO + static assets', () => {
     await expect(page).toHaveTitle(/CONNECT Mastery/);
   });
 
-  test('legacy URLs redirect instead of 404', async ({ page }) => {
+  test('legacy URLs redirect, unknown articles 404 cleanly', async ({ page }) => {
     await page.goto('/get-a-demo');
     await expect(page).toHaveURL('/contact');
 
     await page.goto('/blog');
     await expect(page).toHaveURL('/resources');
 
+    // /blog/$slug is a real article route — an unknown slug renders a proper
+    // 404 page with a route back to Resources, not a soft redirect.
     await page.goto('/blog/some-old-article');
-    await expect(page).toHaveURL('/resources');
+    await expect(
+      page.getByRole('heading', { name: /doesn't exist/ }),
+    ).toBeVisible();
   });
 
   test('robots.txt is served', async ({ request }) => {

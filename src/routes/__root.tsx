@@ -16,6 +16,7 @@ import '~/styles/site.css';
 import '~/styles/pages.css';
 import '~/styles/resources.css';
 import '~/styles/optimizations.css';
+import '~/styles/admin.css';
 
 export const Route = createRootRoute({
   head: () => ({
@@ -54,6 +55,10 @@ export const Route = createRootRoute({
 function RootLayout() {
   const { pathname } = useLocation();
   useReveal(pathname);
+  // The admin console renders its own chrome — no marketing nav/footer.
+  if (pathname.startsWith('/admin')) {
+    return <Outlet />;
+  }
   return (
     <>
       <StatusBar />

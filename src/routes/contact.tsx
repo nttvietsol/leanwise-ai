@@ -59,10 +59,6 @@ function Contact() {
                     <span>press@leanwise.ai</span>
                   </div>
                   <div className="row">
-                    <span>Careers</span>
-                    <span>jobs@leanwise.ai</span>
-                  </div>
-                  <div className="row">
                     <span>Security</span>
                     <span>security@leanwise.ai</span>
                   </div>

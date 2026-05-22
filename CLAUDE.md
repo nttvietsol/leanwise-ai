@@ -19,14 +19,19 @@ pnpm lint
 # Build (vite build → dist/{client,server})
 pnpm build
 
-# Deploy (build + wrangler deploy)
-pnpm deploy
+# Deploy (build + wrangler deploy) — use `run`; bare `pnpm deploy` hits a pnpm builtin
+pnpm run deploy
 
 # Generate Cloudflare env types
 pnpm cf-typegen
 
 # Local Worker dev (after build)
 pnpm wrangler:dev
+
+# D1 — create the (empty) schema on the LOCAL dev database
+pnpm db:setup
+# Same against production D1 (db/schema.sql is a destructive reset — drops + recreates)
+pnpm wrangler d1 execute leanwise-ai --remote --file=db/schema.sql
 
 # Tests
 pnpm test                  # unit + e2e against vite dev
@@ -59,7 +64,7 @@ File-based via TanStack Router. Filenames map to URLs using **dot syntax for nes
 
 ### Server functions
 
-`src/server/forms.ts` defines two form endpoints — `submitDemo` and `joinWaitlist` — via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). All emails route through `sendEmail()`, which reads `RESEND_API_KEY` / `RESEND_FROM` / `RESEND_TO` from `process.env` — works in both Node dev and Cloudflare Workers (the cf vite plugin polyfills `process.env` from wrangler `vars` + secrets). If those vars are missing it logs and returns `ok` instead of failing — that's the dev fallback so e2e tests can validate the success-state UI without sending real emails.
+`src/server/forms.ts` defines two form endpoints — `submitDemo` and `joinWaitlist` — via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). All emails route through `sendEmail()`, which uses **Cloudflare Email Sending** via the `send_email` binding (`MAIL` in `wrangler.jsonc`) — it calls `env.MAIL.send({ from, to, subject, text })` with the structured builder API (no MIME, no API keys). `MAIL_FROM`/`MAIL_TO` are plain `vars`. Under `vite dev` (`import.meta.env.DEV`) the send is skipped and logged — the dev fallback so e2e tests can validate the success-state UI without sending real mail; real delivery happens on the deployed Worker. Email Sending prerequisites are in the Deployment notes below.
 
 ### Styling
 
@@ -67,7 +72,15 @@ The industrial design system is self-contained in `src/styles/` (originally port
 
 Sections wrapped in `.lw-reveal` are hidden via CSS until the `useReveal` hook (`src/components/reveal.ts`) adds `lw-reveal-ready` to `<html>` after hydration. SSR output stays visible by default, so never rely on a `.lw-reveal` element being painted before hydration.
 
-The site is English-only — blog and customer-story content is typed inline in the route files (`resources.tsx`, `customers.tsx`). The blog is a single static route (`blog.the-auditor-doesnt-care.tsx`); `blog.$slug.tsx`, `blog.index.tsx`, and `get-a-demo.tsx` are 301-redirect-only routes kept so legacy URLs resolve.
+The site is English-only. Blog posts and customer-story content live in Cloudflare D1, not inline — see Content store & admin below. `blog.$slug.tsx` is the live blog-post page (D1 loader); `blog.index.tsx` (→ `/resources`) and `get-a-demo.tsx` (→ `/contact`) are 301-redirect-only routes kept so legacy URLs resolve.
+
+### Content store & admin
+
+Blog posts and customer stories live in **Cloudflare D1** (`leanwise-ai` database, `DB` binding). Schema: `db/schema.sql` (the single source of truth — `DROP`s + recreates both tables, no seed data; the DB starts empty and is populated through the `/admin` console). `src/server/db.ts` is the D1 query layer — server-only, reaches bindings via `import { env } from 'cloudflare:workers'`, so never import it from client component scope. `src/server/content.ts` wraps it as `createServerFn` RPCs: public reads (`listPublishedPosts`, `getPublishedPost`, `listStories`) and admin-gated writes. Public routes (`/resources`, `/blog/$slug`, `/customers`) read via route `loader`s; post bodies are Markdown rendered with `marked` (`src/lib/markdown.ts`).
+
+The `/admin/*` console (dashboard + post/story editors) is gated by **Cloudflare Access**. `src/server/auth.ts` verifies the `Cf-Access-Jwt-Assertion` JWT (via `jose`) against the team JWKS; every write server function calls `requireAdmin()`. Local dev has no Access proxy, so `auth.ts` grants a dev identity under `import.meta.env.DEV` — a production build with `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` unset **fails closed**. `RootLayout` renders no marketing chrome under `/admin`.
+
+Gotcha: a TanStack route with a `loader` must not use `head: (ctx) => …` with the inferred `ctx` type — it forms a circular generic that silently drops loader-data typing (`useLoaderData()` becomes `undefined`). Hand-type the `head` ctx param instead (see `blog.$slug.tsx`).
 
 ### Forms — accessibility contract
 
@@ -86,4 +99,7 @@ e2e tests that click JS-driven controls (tabs, form submits, the mobile-menu but
 - Cloudflare account: `nthanhtrung198@gmail.com` (`859506ec8de58eeaeca3f6c4283b422a`).
 - Wrangler is OAuth-authed locally; `wrangler whoami` confirms.
 - To switch from the `*.workers.dev` subdomain to `leanwise.ai`, add a custom domain to the Worker in the Cloudflare dashboard — no code changes needed.
-- Bindings (D1, KV, send_email) are stubbed in `wrangler.jsonc` comments — uncomment + provision when the blog/email features grow beyond the current static + Resend setup.
+- **D1 + KV** are provisioned and bound in `wrangler.jsonc` (`DB`, `CACHE`).
+- **Form email** — `wrangler.jsonc` binds Cloudflare **Email Sending** (`send_email` binding `MAIL`). Prerequisites: (1) the Workers **paid plan** — Email Sending is a paid feature — and (2) the `MAIL_FROM` domain onboarded to Email Sending (dashboard → Compute → Email Service → Email Sending → Onboard Domain, which adds SPF/DKIM DNS records; the domain must use Cloudflare DNS). Email Sending delivers to any recipient — no destination verification. `MAIL_TO` is currently a personal inbox for testing — switch it to `support@leanwise.ai` for production. Until the prerequisites are met, `env.MAIL.send()` rejects.
+- **First-time D1 setup on production** (run once): `wrangler d1 execute leanwise-ai --remote --file=db/schema.sql`. Without this the deployed content pages have no tables to read. Note this drops + recreates the tables — don't re-run it once the production DB holds real content.
+- **Admin auth** — in the Zero Trust dashboard, add a self-hosted Cloudflare Access application covering the `/admin` path, then set `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` in `wrangler.jsonc` `vars` and redeploy. Until those vars are set, `/admin` is locked in production.

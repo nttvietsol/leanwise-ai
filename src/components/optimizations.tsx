@@ -304,37 +304,59 @@ export function QuoteRotator() {
   );
 }
 
+type TeaserItem = {
+  kind: string;
+  tag: string;
+  title: string;
+  date: string;
+  slug?: string; // a blog post slug; otherwise links to /resources
+};
+
+const TEASER_ITEMS: TeaserItem[] = [
+  {
+    kind: 'ESSAY',
+    tag: 'Lean ops',
+    title: 'The 6-hour audit is a choice, not a constraint',
+    date: 'MAY 2026',
+    slug: 'the-auditor-doesnt-care',
+  },
+  {
+    kind: 'GUIDE',
+    tag: 'Playbook',
+    title: 'A field guide to AI in IKEA-supplier compliance',
+    date: 'APR 2026',
+  },
+  {
+    kind: 'METHOD',
+    tag: 'Audit',
+    title: 'Mistake-proofing for paper-based plants',
+    date: 'APR 2026',
+    slug: 'mistake-proofing-for-paper-based-plants',
+  },
+  {
+    kind: 'RESEARCH',
+    tag: 'Benchmark',
+    title: 'Q1 2026 fleet benchmarks: OEE, defects, throughput',
+    date: 'MAR 2026',
+  },
+];
+
+function TeaserCardInner({ it }: { it: TeaserItem }) {
+  return (
+    <>
+      <div className="meta">
+        <span className="kind">{it.kind}</span>
+        <span className="date">{it.date}</span>
+      </div>
+      <h3>{it.title}</h3>
+      <span className="tag">
+        {it.tag} <span className="arrow">→</span>
+      </span>
+    </>
+  );
+}
+
 export function ResourcesTeaser() {
-  const items = [
-    {
-      kind: 'ESSAY',
-      tag: 'Lean ops',
-      title: 'The 6-hour audit is a choice, not a constraint',
-      date: 'MAY 2026',
-      to: '/blog/the-auditor-doesnt-care' as const,
-    },
-    {
-      kind: 'CASE',
-      tag: 'Talimex',
-      title: 'How Talimex cut CONNECT audit cycles by 128×',
-      date: 'APR 2026',
-      to: '/case-studies/talimex' as const,
-    },
-    {
-      kind: 'GUIDE',
-      tag: 'Playbook',
-      title: 'A field guide to AI in IKEA-supplier compliance',
-      date: 'APR 2026',
-      to: '/resources' as const,
-    },
-    {
-      kind: 'RESEARCH',
-      tag: 'Benchmark',
-      title: 'Q1 2026 fleet benchmarks: OEE, defects, throughput',
-      date: 'MAR 2026',
-      to: '/resources' as const,
-    },
-  ];
   return (
     <section className="lw-restease">
       <div className="lw-container">
@@ -348,18 +370,26 @@ export function ResourcesTeaser() {
           </Link>
         </div>
         <div className="lw-restease-grid">
-          {items.map((it) => (
-            <Link key={it.title} to={it.to} className="lw-restease-card">
-              <div className="meta">
-                <span className="kind">{it.kind}</span>
-                <span className="date">{it.date}</span>
-              </div>
-              <h3>{it.title}</h3>
-              <span className="tag">
-                {it.tag} <span className="arrow">→</span>
-              </span>
-            </Link>
-          ))}
+          {TEASER_ITEMS.map((it) =>
+            it.slug ? (
+              <Link
+                key={it.title}
+                to="/blog/$slug"
+                params={{ slug: it.slug }}
+                className="lw-restease-card"
+              >
+                <TeaserCardInner it={it} />
+              </Link>
+            ) : (
+              <Link
+                key={it.title}
+                to="/resources"
+                className="lw-restease-card"
+              >
+                <TeaserCardInner it={it} />
+              </Link>
+            ),
+          )}
         </div>
       </div>
     </section>

@@ -167,20 +167,23 @@ function About() {
           <div className="lw-page-cta-inner">
             <div>
               <div className="lw-eyebrow" style={{ marginBottom: 12 }}>
-                Hiring · 04 roles
+                Work with us
               </div>
-              <h2>Want to build this with us?</h2>
+              <h2>See the platform on your factory floor.</h2>
               <p>
-                We are hiring engineers, a senior designer, and field operations
-                in HCMC. Bilingual EN / VI welcomed.
+                A 30-minute walkthrough on a real instance, with one of your own
+                audit document sets. We come prepared.
               </p>
             </div>
             <div className="lw-page-cta-actions">
               <Link to="/contact" className="lw-btn lw-btn-primary">
-                See open roles <span className="arrow">→</span>
+                Get a demo <span className="arrow">→</span>
               </Link>
-              <Link to="/contact" className="lw-btn lw-btn-ghost">
-                Get in touch
+              <Link
+                to="/solutions/connect-mastery"
+                className="lw-btn lw-btn-ghost"
+              >
+                Explore CONNECT
               </Link>
             </div>
           </div>
