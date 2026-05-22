@@ -1,157 +1,191 @@
-import { type ReactNode } from 'react';
-import { createFileRoute } from '@tanstack/react-router';
-import { useI18n } from '~/i18n';
-import { Page, SectionHeader } from '~/components/ui';
+import { createFileRoute, Link } from '@tanstack/react-router';
+import { TrustStrip } from '~/components/footer';
 
 export const Route = createFileRoute('/about')({
-  component: AboutPage,
-  head: () => ({ meta: [{ title: 'About — LeanWise AI' }] }),
+  component: About,
+  head: () => ({
+    meta: [
+      { title: 'About — LeanWise AI' },
+      {
+        name: 'description',
+        content:
+          'LeanWise AI is a Ho Chi Minh City company building the operating system for IKEA-supplier plants in Vietnam.',
+      },
+    ],
+  }),
 });
 
-function ShieldIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M12 2L3 7v5c0 5.25 3.75 10.15 9 11.35C17.25 22.15 21 17.25 21 12V7L12 2z"/>
-    </svg>
-  );
-}
+const VALUES = [
+  {
+    num: 'P.01',
+    t: "Earn the operator's minute",
+    b: 'A second on the floor is worth a hundred in a meeting room. If our UI takes more clicks than the old way, the old way wins. We earn every interaction.',
+  },
+  {
+    num: 'P.02',
+    t: 'Honest about uncertainty',
+    b: 'AI that pretends to be certain is dangerous in a factory. Every match has a confidence score, every ambiguity gets flagged, and reviewers stay in the loop on the hard calls.',
+  },
+  {
+    num: 'P.03',
+    t: 'Bilingual day one',
+    b: 'English-first products fail on Vietnamese floors. We build EN and VI side-by-side from the first wireframe — not as a translation layer six months later.',
+  },
+  {
+    num: 'P.04',
+    t: 'Lean before AI',
+    b: 'AI without lean thinking is just expensive automation. We start by removing the waste, then apply AI to what is left. Same order, every time.',
+  },
+];
 
-function TrendingUpIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <polyline points="23 6 13.5 15.5 8.5 10.5 1 18"/>
-      <polyline points="17 6 23 6 23 12"/>
-    </svg>
-  );
-}
+const TEAM = [
+  {
+    name: 'Nguyen Tien Dat',
+    role: 'CEO · COFOUNDER',
+    bio: '12 years in IKEA-supplier operations. Former plant director at a Tier-1 furniture supplier in Binh Duong. Lean Six Sigma Black Belt.',
+  },
+  {
+    name: 'Le Minh Anh',
+    role: 'CTO · COFOUNDER',
+    bio: 'Ex-Grab AI platform. Led ML systems for fraud detection. Built the semantic matching engine behind CONNECT Mastery.',
+  },
+  {
+    name: 'Tran Van Khoa',
+    role: 'COO · COFOUNDER',
+    bio: '15 years in supply chain at Procter & Gamble Vietnam. Runs deployments, customer success, and the field team.',
+  },
+  {
+    name: 'Pham Hoang Long',
+    role: 'HEAD OF DESIGN',
+    bio: 'Designer for two factory-floor product launches. Spent 200+ hours in audits before drawing a wireframe.',
+  },
+  {
+    name: 'Vo Thi Mai',
+    role: 'HEAD OF FIELD',
+    bio: 'Quality engineer at NSF Vietnam, then Talimex. Knows what a CONNECT audit looks like at 3am before a deadline.',
+  },
+  {
+    name: 'Bui Hai Nam',
+    role: 'PRINCIPAL ENGINEER',
+    bio: 'Backend systems at Tiki and Lazada. Owns the ingest pipeline and the plant-to-cloud sync layer.',
+  },
+];
 
-function TargetIcon() {
+function About() {
   return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="12" cy="12" r="10"/>
-      <circle cx="12" cy="12" r="6"/>
-      <circle cx="12" cy="12" r="2"/>
-    </svg>
-  );
-}
+    <>
+      <section className="lw-page-hero">
+        <div className="lw-container">
+          <div style={{ maxWidth: 880 }} className="lw-reveal">
+            <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+              Company · est. 2024 · HCMC
+            </div>
+            <h1 className="lw-h1">
+              Built in the
+              <br />
+              same factories
+              <br />
+              we <em>serve.</em>
+            </h1>
+            <p className="lw-lead" style={{ marginTop: 32, fontSize: 18 }}>
+              LeanWise AI is a Ho Chi Minh City company building the operating
+              system for IKEA-supplier plants in Vietnam. We started by spending
+              six months on the floor — not in slide decks — with quality
+              engineers, line leads, and plant managers. Every feature still has
+              to survive the test of someone in a high-vis vest using it on a
+              Tuesday.
+            </p>
+          </div>
+        </div>
+      </section>
 
-function HandshakeIcon() {
-  return (
-    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <path d="M9 11l3 3L22 4"/>
-      <path d="M21 12v7a2 2 0 01-2 2H5a2 2 0 01-2-2V5a2 2 0 012-2h11"/>
-    </svg>
-  );
-}
+      <TrustStrip />
 
-function ValueCard({ icon, name, body }: { icon: ReactNode; name: string; body: string }) {
-  return (
-    <div className="value-card">
-      <div className="value-icon">{icon}</div>
-      <h3 className="h3">{name}</h3>
-      <p>{body}</p>
-    </div>
-  );
-}
-
-function FounderCard({ photo: _photo, name, role, bio, initials }: {
-  photo: string; name: string; role: string; bio: string; initials: string
-}) {
-  return (
-    <div className="founder-card">
-      <div className="founder-avatar-fallback" aria-label={name}>{initials}</div>
-      <div className="founder-info">
-        <div className="founder-role">{role}</div>
-        <h3 className="founder-name">{name}</h3>
-        <p className="lead">{bio}</p>
-      </div>
-    </div>
-  );
-}
-
-function AboutPage() {
-  const { t } = useI18n();
-  return (
-    <Page>
-      <section className="section section-tight">
-        <div className="container-wide">
-          <div className="origin-grid">
+      <section className="lw-section">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
             <div>
-              <SectionHeader
-                eyebrow={t('about.eyebrow')}
-                title={t('about.title')}
-                titleClass="h1"
-              />
-              <p className="lead" style={{ marginTop: 16 }}>{t('about.lead')}</p>
-            </div>
-            <div className="origin-stat-card">
-              <div className="origin-stat-bg" aria-hidden="true"></div>
-              <div className="small-mono" style={{ color: 'var(--accent)' }}>{t('vision.eyebrow')} / 02</div>
-              <p className="origin-stat-text">{t('vision.text')}</p>
-              <div className="origin-stat-meta">
-                <div><strong>{t('vision.stat1')}</strong><span>{t('vision.stat1.l')}</span></div>
-                <div><strong>{t('vision.stat2')}</strong><span>{t('vision.stat2.l')}</span></div>
-                <div><strong>{t('vision.stat3')}</strong><span>{t('vision.stat3.l')}</span></div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                Principles · 04
               </div>
+              <h2 className="lw-h2">
+                How we
+                <br />
+                build.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              Four rules that guide every product decision. They came from the
+              floor — not from a strategy offsite.
+            </p>
+          </div>
+          <div className="lw-values lw-reveal" style={{ marginTop: 48 }}>
+            {VALUES.map((v) => (
+              <div key={v.num} className="lw-value">
+                <div className="num">{v.num}</div>
+                <h3>{v.t}</h3>
+                <p>{v.b}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="lw-section" style={{ paddingTop: 0 }}>
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                Team · founders
+              </div>
+              <h2 className="lw-h2">
+                Manufacturing
+                <br />+ AI in one room.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              Three founders. Decades of factory floor between them. Currently 11
+              people across HCMC and Singapore — engineering, design, and field
+              support.
+            </p>
+          </div>
+          <div className="lw-team lw-reveal" style={{ marginTop: 48 }}>
+            {TEAM.map((p) => (
+              <div key={p.name} className="lw-person">
+                <div className="av"></div>
+                <div className="name">{p.name}</div>
+                <div className="role">{p.role}</div>
+                <p>{p.bio}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section className="lw-page-cta">
+        <div className="lw-container">
+          <div className="lw-page-cta-inner">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 12 }}>
+                Hiring · 04 roles
+              </div>
+              <h2>Want to build this with us?</h2>
+              <p>
+                We are hiring engineers, a senior designer, and field operations
+                in HCMC. Bilingual EN / VI welcomed.
+              </p>
+            </div>
+            <div className="lw-page-cta-actions">
+              <Link to="/contact" className="lw-btn lw-btn-primary">
+                See open roles <span className="arrow">→</span>
+              </Link>
+              <Link to="/contact" className="lw-btn lw-btn-ghost">
+                Get in touch
+              </Link>
             </div>
           </div>
         </div>
       </section>
-
-      <section className="section values-sec">
-        <div className="container-wide">
-          <SectionHeader
-            eyebrow={t('values.eyebrow')}
-            title={t('values.title')}
-            align="center"
-          />
-          <div className="values-grid">
-            <ValueCard icon={<ShieldIcon />} name={t('values.1.title')} body={t('values.1.body')} />
-            <ValueCard icon={<TrendingUpIcon />} name={t('values.2.title')} body={t('values.2.body')} />
-            <ValueCard icon={<TargetIcon />} name={t('values.3.title')} body={t('values.3.body')} />
-            <ValueCard icon={<HandshakeIcon />} name={t('values.4.title')} body={t('values.4.body')} />
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container-wide">
-          <SectionHeader
-            eyebrow={t('team.eyebrow')}
-            title={t('team.title')}
-            align="center"
-          />
-          <div className="team-grid">
-            <FounderCard
-              photo="/assets/founder-Truong.png"
-              name={t('founder1.name')}
-              role={t('founder1.role')}
-              bio={t('founder1.bio')}
-              initials="TN"
-            />
-            <FounderCard
-              photo="/assets/founder-Trung.png"
-              name={t('founder2.name')}
-              role={t('founder2.role')}
-              bio={t('founder2.bio')}
-              initials="TD"
-            />
-          </div>
-        </div>
-      </section>
-
-      <section className="section">
-        <div className="container-wide">
-          <div className="final-cta-card about-vision-card">
-            <div className="final-cta-bg" aria-hidden="true"></div>
-            <div className="final-cta-inner">
-              <div className="eyebrow" style={{ color: 'var(--accent)' }}>{t('about.vision.eyebrow')}</div>
-              <h2 className="h1">{t('about.vision.title')}</h2>
-              <p className="lead">{t('about.vision.body')}</p>
-            </div>
-          </div>
-        </div>
-      </section>
-    </Page>
+    </>
   );
 }

@@ -1,40 +1,33 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
 test.describe('Navigation', () => {
-  test('Solutions dropdown opens and links work', async ({ page, isMobile }) => {
-    test.skip(isMobile, 'desktop dropdown only');
+  test('desktop nav links route correctly', async ({ page, isMobile }) => {
+    test.skip(isMobile, 'desktop nav only');
 
     await page.goto('/');
-    const trigger = page.getByRole('button', { name: /Solutions/ });
-    await trigger.hover();
-
-    await expect(page.getByRole('link', { name: /CONNECT Mastery/ }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /SOP Mastery/ }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /Operations Mastery/ }).first()).toBeVisible();
-
-    await page.getByRole('link', { name: /CONNECT Mastery/ }).first().click();
+    const nav = page.getByRole('navigation', { name: 'Primary' });
+    await nav.getByRole('link', { name: 'CONNECT', exact: true }).click();
     await expect(page).toHaveURL('/solutions/connect-mastery');
+
+    await nav.getByRole('link', { name: 'Pricing', exact: true }).click();
+    await expect(page).toHaveURL('/pricing');
   });
 
-  test('mobile burger opens menu', async ({ page, isMobile }) => {
+  test('mobile menu opens and links work', async ({ page, isMobile }) => {
     test.skip(!isMobile, 'mobile only');
 
     await page.goto('/');
+    await hydrated(page);
     await page.getByRole('button', { name: 'Menu' }).click();
-
-    await expect(page.getByRole('link', { name: 'About' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Blog' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Contact' }).first()).toBeVisible();
+    const menu = page.getByRole('dialog', { name: 'Menu' });
+    await expect(menu.getByRole('link', { name: 'Resources' })).toBeVisible();
+    await menu.getByRole('link', { name: 'About', exact: true }).click();
+    await expect(page).toHaveURL('/about');
   });
 
-  test('footer links all work', async ({ page }) => {
+  test('status bar shows live system marker', async ({ page }) => {
     await page.goto('/');
-    // Each footer column has a few links — sample one from each.
-    await expect(page.getByRole('link', { name: 'Privacy Policy' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Terms of Service' })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'support@leanwise.ai' })).toHaveAttribute(
-      'href',
-      'mailto:support@leanwise.ai',
-    );
+    await expect(page.getByText('SYS · ONLINE')).toBeVisible();
   });
 });

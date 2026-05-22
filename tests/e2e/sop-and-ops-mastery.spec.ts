@@ -1,48 +1,37 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
-test.describe('SOP Mastery (coming soon)', () => {
-  test('renders R&D pill, hero, and waitlist form', async ({ page }) => {
+test.describe('SOP Mastery (R&D)', () => {
+  test('renders hero and waitlist form', async ({ page }) => {
     await page.goto('/solutions/sop-mastery');
-
-    await expect(page.getByRole('heading', { name: 'SOP Mastery' })).toBeVisible();
-    await expect(page.getByText(/R&D · In development/)).toBeVisible();
-    await expect(page.getByText('Optimize your processes')).toBeVisible();
-
-    await expect(page.getByRole('heading', { name: 'Join the waitlist' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Visual SOPs/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByText('MOD.02 · R&D · Q4 2026')).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Pilot opens/ })).toBeVisible();
   });
 
-  test('waitlist form rejects invalid email', async ({ page }) => {
+  test('waitlist rejects invalid email, accepts valid', async ({ page }) => {
     await page.goto('/solutions/sop-mastery#waitlist');
-    await page.getByLabel(/Work email/).fill('not-an-email');
-    await page.getByRole('button', { name: 'Join waitlist' }).click();
-    await expect(page.getByText('Please enter a valid email.')).toBeVisible();
-  });
+    await hydrated(page);
 
-  test('waitlist form succeeds with a valid email', async ({ page }) => {
-    await page.goto('/solutions/sop-mastery#waitlist');
-    await page.getByLabel(/Work email/).fill('test@factory.vn');
-    await page.getByLabel(/Company/).fill('Test Factory');
-    await page.getByRole('button', { name: 'Join waitlist' }).click();
-    await expect(page.getByRole('heading', { name: /You're on the list/ })).toBeVisible();
-    await expect(page.getByText('test@factory.vn')).toBeVisible();
+    await page.getByLabel('Work email').fill('not-an-email');
+    await page.getByRole('button', { name: /Request pilot slot/ }).click();
+    await expect(page.getByText('Please enter a valid work email.')).toBeVisible();
+
+    await page.getByLabel('Work email').fill('test@factory.vn');
+    await page.getByRole('button', { name: /Request pilot slot/ }).click();
+    await expect(page.getByText(/You're on the list/)).toBeVisible();
   });
 });
 
 test.describe('Operations Mastery (research)', () => {
-  test('renders research pill, ops mock, and follow-research form', async ({ page }) => {
+  test('renders hero, research questions, and partner form', async ({ page }) => {
     await page.goto('/solutions/operations-mastery');
-
-    await expect(page.getByRole('heading', { name: 'Operations Mastery' })).toBeVisible();
-    await expect(page.getByText(/R&D · Research/)).toBeVisible();
-    await expect(page.getByText('Boost operational performance')).toBeVisible();
-
-    // Mock dashboard tiles
-    await expect(page.getByText('OEE')).toBeVisible();
-    await expect(page.getByText('DEFECTS')).toBeVisible();
-
-    // Form succeeds
-    await page.getByLabel(/Work email/).fill('ops@factory.vn');
-    await page.getByRole('button', { name: 'Join waitlist' }).click();
-    await expect(page.getByRole('heading', { name: /You're on the list/ })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /30 seconds/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByText('MOD.03 · RESEARCH · 2027')).toBeVisible();
+    await expect(page.getByRole('button', { name: /Apply as partner/ })).toBeVisible();
   });
 });

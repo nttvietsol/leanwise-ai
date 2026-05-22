@@ -1,182 +1,253 @@
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { Page, SectionHeader } from '~/components/ui';
-import { FinalCTA, ResultsStrip } from '~/components/final-cta';
+import { TrustStrip } from '~/components/footer';
+import { ResultStage } from '~/components/how-it-works';
 
 export const Route = createFileRoute('/solutions/connect-mastery')({
-  component: ConnectMasteryPage,
+  component: ConnectPage,
   head: () => ({
     meta: [
-      { title: 'CONNECT Mastery — Eliminate Compliance Waste' },
+      { title: 'CONNECT Mastery — LeanWise AI' },
       {
         name: 'description',
         content:
-          'Automate IKEA CONNECT document verification. Catch every critical error before the auditor does — without the manual work.',
+          'Automate IKEA CONNECT document verification. Catch every critical error before the auditor does — in minutes, not hours.',
       },
     ],
   }),
 });
 
-function FeatureBlock({
-  eyebrow,
-  title,
-  body,
-  bullets,
-  imgSrc,
-  imgAlt,
-  flip,
-  figureClassName,
-}: {
-  eyebrow: string;
-  title: string;
-  body: string;
-  bullets: string[];
-  imgSrc: string;
-  imgAlt: string;
-  flip?: boolean;
-  figureClassName?: string;
-}) {
-  return (
-    <div className={`feat-block${flip ? ' feat-block--flip' : ''}`}>
-      <figure className={`feat-img${figureClassName ? ' ' + figureClassName : ''}`}>
-        <img src={imgSrc} alt={imgAlt} loading="lazy" />
-      </figure>
-      <div className="feat-copy">
-        <div className="feat-eyebrow mono">{eyebrow}</div>
-        <h3 className="h2">{title}</h3>
-        <p className="lead">{body}</p>
-        <ul className="feat-list">
-          {bullets.map((b, i) => (
-            <li key={i}>{b}</li>
-          ))}
-        </ul>
-      </div>
-    </div>
-  );
-}
+const ANATOMY = [
+  {
+    num: 'STG.01',
+    t: 'Ingest',
+    b: 'Drop PDF / DOCX / XLSX. We parse text, tables, and embedded images. CONNECT spec auto-pinned to the latest version.',
+  },
+  {
+    num: 'STG.02',
+    t: 'Extract',
+    b: 'Every requirement, every clause, every test parameter pulled into a structured graph. Typically 200–300 items per audit.',
+  },
+  {
+    num: 'STG.03',
+    t: 'Match',
+    b: 'Semantic comparison against the live CONNECT spec. Ambiguities flagged with confidence scores — never silently accepted.',
+  },
+  {
+    num: 'STG.04',
+    t: 'Report',
+    b: 'Line-level pass/fail with citations. Export PDF, push to your QMS, or trigger a re-check after fixes — all from the same screen.',
+  },
+];
 
-function HowStep({ n, title, body }: { n: string; title: string; body: string }) {
-  return (
-    <div className="step">
-      <div className="step-num">{n}</div>
-      <h3 className="step-title">{title}</h3>
-      <p className="step-body">{body}</p>
-    </div>
-  );
-}
+const CAPABILITIES: [string, string, string, string][] = [
+  ['CAP.01', 'Multi-document ingest', 'Parse PDFs, DOCX, XLSX, embedded tables and figures. Handles scanned docs via OCR.', 'PDF · DOCX · XLSX'],
+  ['CAP.02', 'Semantic requirement matching', 'Goes beyond keyword search. Understands "rated load 80kg" equals "maximum static load 80 kilograms".', '99.2% accuracy'],
+  ['CAP.03', 'CONNECT spec auto-pinning', 'Every audit references the live IKEA CONNECT spec. No more out-of-date PDFs floating around shared drives.', 'Live · v18'],
+  ['CAP.04', 'Confidence-scored ambiguities', "When the AI isn't sure, it says so. Reviewers see a numeric confidence and the source citation, never a black box.", '0–100% scored'],
+  ['CAP.05', 'Audit history & diff', 'Every audit is versioned. Compare two cycles side-by-side, see exactly what changed and when.', 'Diff · audit log'],
+  ['CAP.06', 'Bilingual reports', 'Generated reports in English and Vietnamese — same content, dual-rendered, no manual translation.', 'EN · VI'],
+  ['CAP.07', 'QMS push', "One-click export to your existing QMS (SAP QM, Veeva, custom REST). Doesn't replace your stack.", 'SAP · REST'],
+  ['CAP.08', 'SOC 2 + on-prem option', "Cloud (default) or self-hosted on your infrastructure. Documents never leave your boundary if you don't want them to.", 'SOC2 · on-prem'],
+];
 
-function ConnectMasteryPage() {
+const RESULTS = [
+  { num: '75', unit: '%', lbl: 'Faster audit cycle', desc: '6h → 3min, measured' },
+  { num: '99.2', unit: '%', lbl: 'Match accuracy', desc: 'vs human reviewer baseline' },
+  { num: '0', unit: '', lbl: 'Failed audits Q1', desc: 'across 3 plants' },
+  { num: '$48K', unit: '', lbl: 'Avg cost saved', desc: 'per plant per quarter' },
+];
+
+function ConnectPage() {
   return (
-    <Page>
-      <section className="product-hero section">
-        <div className="container">
-          <span className="pill pill-ok">
-            <span className="pill-dot" />
-            Available Now
-          </span>
-          <h1 className="h1">
-            <span className="ink-grad">Eliminate Compliance Waste</span>
-          </h1>
-          <p className="lead">
-            CONNECT Mastery automates IKEA CONNECT compliance checks using AI. What takes your team
-            4–6 hours now takes minutes — with higher accuracy than any manual process.
-          </p>
-          <div className="hero-ctas">
-            <Link to="/get-a-demo" className="btn btn-primary btn-lg">
-              Get a Demo
-            </Link>
-            <Link to="/contact" className="btn btn-ghost btn-lg">
-              See it in Action
-            </Link>
-          </div>
-          <div className="product-hero-trust">
-            <img src="/assets/ngoc-son-logo.png" alt="Ngoc Son" loading="lazy" />
-            <img src="/assets/sedo-logo.png" alt="Sedo" loading="lazy" />
-            <img src="/assets/Talimex-logo.png" alt="Talimex" loading="lazy" />
+    <>
+      {/* HERO */}
+      <section className="lw-page-hero dark">
+        <div className="lw-container">
+          <div className="lw-page-hero-grid">
+            <div>
+              <div className="lw-eyebrow lw-reveal">MOD.01 · LIVE · Q1 2026</div>
+              <h1 className="lw-h1 lw-reveal" data-d="1">
+                CONNECT audits
+                <br />
+                in <em>3 minutes,</em>
+                <br />
+                not 6 hours.
+              </h1>
+              <p
+                className="lw-lead lw-reveal"
+                data-d="2"
+                style={{ marginBottom: 32 }}
+              >
+                Drop your test plans, TSS files and CONNECT specs. Our AI
+                cross-references every requirement against the latest IKEA spec —
+                semantic matching, not keyword search. Get a pass/fail report with
+                line-level detail before your coffee cools.
+              </p>
+              <div className="lw-hero-ctas lw-reveal" data-d="3">
+                <Link to="/contact" className="lw-btn lw-btn-amber">
+                  Book a live audit demo <span className="arrow">→</span>
+                </Link>
+                <a
+                  href="#anatomy"
+                  className="lw-btn lw-btn-ghost"
+                  style={{ color: '#fff', borderColor: 'rgba(255,255,255,0.24)' }}
+                >
+                  See how it works
+                </a>
+              </div>
+              <div className="meta">
+                <span>
+                  <b>247/248</b> avg requirements verified
+                </span>
+                <span>
+                  <b>2m 47s</b> median audit time
+                </span>
+                <span>
+                  <b>0</b> failed audits · Q1 &rsquo;26
+                </span>
+              </div>
+            </div>
+            <div className="lw-reveal" data-d="2">
+              <div className="lw-console" style={{ background: 'var(--paper)' }}>
+                <header className="lw-console-h">
+                  <div className="left">
+                    <div className="lights">
+                      <i></i>
+                      <i></i>
+                      <i></i>
+                    </div>
+                    <span className="url">
+                      app.leanwise.ai/connect/audit/1142
+                    </span>
+                  </div>
+                  <span style={{ color: 'var(--ok)' }}>● PASS</span>
+                </header>
+                <div className="lw-console-body" style={{ padding: 0 }}>
+                  <ResultStage />
+                </div>
+                <div className="lw-console-foot">
+                  <span>AUDIT 2026-Q2-1142</span>
+                  <span>NSF · TALIMEX</span>
+                  <span>14:32 UTC+7</span>
+                </div>
+              </div>
+            </div>
           </div>
         </div>
       </section>
 
-      <section className="section">
-        <div className="container">
-          <div className="feat-blocks">
-            <FeatureBlock
-              eyebrow="Feature 01"
-              title="AI-Powered Document Verification"
-              body="Upload your factory documents and let our AI instantly cross-reference them against IKEA CONNECT requirements. No more manual page-by-page checking."
-              bullets={[
-                'Processes 50+ document types',
-                'Catches mismatches humans miss',
-                'Instant pass/fail report',
-              ]}
-              imgSrc="/assets/auto-check.png"
-              imgAlt="AI document verification results"
-            />
-            <FeatureBlock
-              eyebrow="Feature 02"
-              title="TSS vs. Test Plan Matching"
-              body="Automatically match Technical Specification Sheets against test plans. Our AI understands the semantic relationship between requirements — not just keyword matching."
-              bullets={[
-                'Semantic requirement matching',
-                'Highlights specific discrepancies',
-                'Exportable compliance report',
-              ]}
-              imgSrc="/assets/TSS-check.png"
-              imgAlt="TSS vs test plan matching"
-              flip
-            />
-            <FeatureBlock
-              eyebrow="Feature 03"
-              title="Cloud-Based Processing"
-              body="No software to install. Upload documents from anywhere and get results in minutes. Your data is encrypted and never shared."
-              bullets={[
-                'Works from any device',
-                '256-bit encryption',
-                'Results in under 3 minutes',
-              ]}
-              imgSrc="/assets/cloud-process.png"
-              imgAlt="Cloud-based processing"
-              figureClassName="feat-img--cloud"
-            />
+      <TrustStrip />
+
+      {/* ANATOMY OF AN AUDIT */}
+      <section className="lw-section" id="anatomy">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                Anatomy · 04 stages
+              </div>
+              <h2 className="lw-h2">
+                What an audit
+                <br />
+                looks like, end to end.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              A real cycle, with no editorializing. The same flow we run for every
+              IKEA-supplier plant on the platform.
+            </p>
+          </div>
+          <div className="lw-features lw-reveal" style={{ marginTop: 48 }}>
+            {ANATOMY.map((f) => (
+              <div key={f.num} className="lw-feature">
+                <div className="num">{f.num}</div>
+                <h3>{f.t}</h3>
+                <p>{f.b}</p>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <ResultsStrip />
-
-      <section className="section">
-        <div className="container">
-          <SectionHeader
-            eyebrow="Process"
-            title="From upload to results in 3 steps"
-            align="center"
-          />
-          <div className="how-steps">
-            <HowStep
-              n="01"
-              title="Upload Documents"
-              body="Drop your factory documents, test plans, or TSS files into the secure upload portal."
-            />
-            <HowStep
-              n="02"
-              title="AI Analysis"
-              body="Our AI reads, understands, and cross-references every requirement in seconds."
-            />
-            <HowStep
-              n="03"
-              title="Review Results"
-              body="Get a clear pass/fail report with specific discrepancies highlighted for your team to action."
-            />
+      {/* CAPABILITIES */}
+      <section className="lw-section" style={{ paddingTop: 0 }}>
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                Capabilities · 08 items
+              </div>
+              <h2 className="lw-h2">What it actually does.</h2>
+            </div>
+            <p className="lw-lead">
+              No marketing fluff. The eight capabilities that make a real
+              difference in a quality engineer&apos;s day.
+            </p>
+          </div>
+          <div className="lw-specs lw-reveal" style={{ marginTop: 40 }}>
+            {CAPABILITIES.map(([id, n, d, m]) => (
+              <div key={id} className="lw-spec-row">
+                <span className="id">{id}</span>
+                <span className="name">{n}</span>
+                <span className="desc">{d}</span>
+                <span className="meta">{m}</span>
+              </div>
+            ))}
           </div>
         </div>
       </section>
 
-      <FinalCTA
-        title="Start your compliance transformation"
-        sub="Join 4 factories already saving hours per audit cycle with CONNECT Mastery."
-        primary="Get a Demo"
-        secondary="Contact Us"
-        secondaryTo="/contact"
-      />
-    </Page>
+      {/* RESULT STRIP */}
+      <section
+        className="lw-section"
+        style={{
+          background: 'var(--paper-2)',
+          borderTop: '1px solid var(--line)',
+          borderBottom: '1px solid var(--line)',
+        }}
+      >
+        <div className="lw-container">
+          <div className="lw-results-grid lw-reveal">
+            {RESULTS.map((r) => (
+              <div key={r.lbl} className="lw-results-cell">
+                <div className="lbl">{r.lbl.toUpperCase()}</div>
+                <div className="num">
+                  <span className="a">{r.num}</span>
+                  <span className="unit">{r.unit}</span>
+                </div>
+                <div className="desc">{r.desc}</div>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      {/* CTA */}
+      <section className="lw-page-cta">
+        <div className="lw-container">
+          <div className="lw-page-cta-inner">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 12 }}>
+                Live module · onboarding open
+              </div>
+              <h2>Run your next audit on CONNECT.</h2>
+              <p>
+                30-minute walkthrough on a real instance. Bring one of your audit
+                document sets — we&apos;ll run it live, side-by-side with your
+                current process.
+              </p>
+            </div>
+            <div className="lw-page-cta-actions">
+              <Link to="/contact" className="lw-btn lw-btn-primary">
+                Book a demo <span className="arrow">→</span>
+              </Link>
+              <Link to="/pricing" className="lw-btn lw-btn-ghost">
+                See pricing
+              </Link>
+            </div>
+          </div>
+        </div>
+      </section>
+    </>
   );
 }

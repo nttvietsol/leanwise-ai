@@ -1,278 +1,263 @@
-import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
-import { useI18n } from '~/i18n';
-import { Page, SectionHeader, Marquee } from '~/components/ui';
-import { FinalCTA, ResultsStrip } from '~/components/final-cta';
+import { LiveTelemetry } from '~/components/live-telemetry';
+import { ProductPicker } from '~/components/product-picker';
+import { HowItWorks } from '~/components/how-it-works';
+import { TrustStrip } from '~/components/footer';
+import {
+  CompactStatBanner,
+  ScaleAnchors,
+  BeforeAfter,
+  ComparisonTable,
+  QuoteRotator,
+  ResourcesTeaser,
+} from '~/components/optimizations';
 
 export const Route = createFileRoute('/')({
-  component: HomePage,
+  component: Home,
   head: () => ({
     meta: [
-      { title: 'LeanWise AI — Lean Thinking. AI Speed. Real Results.' },
+      { title: 'LeanWise AI — Operating system for lean factories' },
     ],
   }),
 });
 
-function HeroAppShot() {
-  const { t } = useI18n();
-  const [tab, setTab] = useState<'dashboard' | 'validation'>('dashboard');
-  const shot = tab === 'dashboard'
-    ? '/assets/dashboard-preview.png'
-    : '/assets/dashboard-preview-2.png';
+const RESULTS = [
+  { num: '+8.2', unit: 'pts', lbl: 'OEE improvement', desc: 'vs Q4 2025 baseline' },
+  { num: '−34', unit: '%', lbl: 'Downtime reduction', desc: 'unplanned stops · weekly avg' },
+  { num: '75', unit: '%', lbl: 'Faster audit cycle', desc: 'minutes vs hours per cycle' },
+  { num: '3.4', unit: '×', lbl: 'ROI · year one', desc: 'direct + indirect labor savings' },
+];
+
+function Home() {
   return (
-    <div className="hero-panel hero-panel--shot">
-      <div className="hero-panel-chrome">
-        <div className="chrome-dots">
-          <span className="dot-close"></span>
-          <span className="dot-min"></span>
-          <span className="dot-max"></span>
-        </div>
-        <div className="chrome-url">dashboard.leanwise.ai</div>
-        <div className="chrome-tabs">
-          <button
-            className={tab === 'dashboard' ? 'is-active' : ''}
-            onClick={() => setTab('dashboard')}
-          >{t('home.hero.tab.dashboard')}</button>
-          <button
-            className={tab === 'validation' ? 'is-active' : ''}
-            onClick={() => setTab('validation')}
-          >{t('home.hero.tab.validation')}</button>
-        </div>
-      </div>
-      <div className="hero-panel-body">
-        <img
-          src={shot}
-          alt="LeanWise CONNECT Mastery dashboard — live product screenshot"
-          loading="eager"
-        />
-      </div>
-      <div className="hero-panel-foot">
-        <span className="panel-status-dot"></span>{t('home.hero.panel.status')}
-      </div>
-    </div>
-  );
-}
-
-function TrustBar() {
-  const { t } = useI18n();
-  const logos = [
-    { src: '/assets/sedo-logo.png', alt: 'SEDO Camping' },
-    { src: '/assets/ngoc-son-logo.png', alt: 'Ngoc Son BR' },
-    { src: '/assets/cpc-logo.png', alt: 'Continent Packaging' },
-    { src: '/assets/Talimex-logo.png', alt: 'Talimex' },
-  ];
-  return (
-    <section className="trust-bar">
-      <div className="container-wide">
-        <div className="trust-text">{t('home.trust')}</div>
-        <Marquee speed={45}>
-          <div className="trust-row">
-            {logos.map(l => (
-              <img key={l.alt} src={l.src} alt={l.alt} className="trust-logo" />
-            ))}
-          </div>
-          <div className="trust-row">
-            {logos.map(l => (
-              <img key={l.alt + 'b'} src={l.src} alt={l.alt} className="trust-logo" />
-            ))}
-          </div>
-        </Marquee>
-      </div>
-    </section>
-  );
-}
-
-function ProblemCard({
-  n, title, body, icon,
-}: { n: string; title: string; body: string; icon: 'hourglass' | 'shield' | 'people' }) {
-  const icons = {
-    hourglass: (
-      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
-        <path d="M7 3h10M7 21h10M7 3v3a5 5 0 005 5 5 5 0 005-5V3M7 21v-3a5 5 0 015-5 5 5 0 015 5v3" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    shield: (
-      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
-        <path d="M12 3L4 7v5c0 5.25 3.5 10.15 8 11.35C16.5 22.15 20 17.25 20 12V7l-8-4z" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M12 8v4M12 16h.01" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-    people: (
-      <svg viewBox="0 0 24 24" fill="none" width="24" height="24">
-        <circle cx="9" cy="8" r="3.5" stroke="currentColor" strokeWidth="1.5" />
-        <path d="M3 19a6 6 0 0112 0M16 7a3 3 0 010 6M21 19a5 5 0 00-3-4.6" stroke="currentColor" strokeWidth="1.5" strokeLinecap="round" />
-      </svg>
-    ),
-  };
-  return (
-    <div className="problem-card">
-      <div className="problem-card-h">
-        <div className="problem-icon">{icons[icon]}</div>
-        <div className="problem-num mono">{n}</div>
-      </div>
-      <h3 className="h3">{title}</h3>
-      <p>{body}</p>
-    </div>
-  );
-}
-
-function ProductCard({
-  num, available, name, tag, body, features, cta, ctaTo,
-}: {
-  num: string;
-  available?: boolean;
-  name: string;
-  tag: string;
-  body: string;
-  features: string[];
-  cta: string;
-  ctaTo: string;
-}) {
-  const { t } = useI18n();
-  return (
-    <div className={`product-card ${available ? 'is-available' : ''}`}>
-      <div className="product-card-h">
-        <span className="mono small-mono">{num}</span>
-        {available
-          ? <span className="tag-avail">{t('nav.available')}</span>
-          : <span className="tag-rd">{t('nav.rd')}</span>}
-      </div>
-      <h3 className="product-name">{name}</h3>
-      <div className="product-tag">{tag}</div>
-      <p className="product-body">{body}</p>
-      <ul className="product-features">
-        {features.map((f, i) => (
-          <li key={i}>
-            <svg width="14" height="14" viewBox="0 0 14 14" fill="none">
-              <path d="M3 7l3 3 5-6" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-            </svg>
-            {f}
-          </li>
-        ))}
-      </ul>
-      <div className="product-cta">
-        <Link to={ctaTo} className="btn btn-link">{cta}</Link>
-      </div>
-    </div>
-  );
-}
-
-function HomePage() {
-  const { t } = useI18n();
-
-  return (
-    <Page>
-      {/* HERO */}
-      <section className="hero">
-        <div className="hero-bg" aria-hidden="true">
-          <div className="hero-grid"></div>
-          <div className="hero-glow"></div>
-        </div>
-
-        <div className="container-wide hero-inner">
-          <div className="hero-copy">
-            <div className="pill">
-              <span className="dot"></span>
-              {t('home.hero.badge')}
+    <>
+      {/* HERO — distilled */}
+      <section className="lw-hero">
+        <div className="lw-container">
+          <div className="lw-hero-grid">
+            <div>
+              <div className="lw-eyebrow lw-reveal">The platform</div>
+              <h1 className="lw-h1 lw-reveal" data-d="1">
+                The operating system
+                <br />
+                for <em>lean factories.</em>
+              </h1>
+              <p className="lw-lead lw-reveal" data-d="2">
+                LeanWise AI replaces manual compliance checks, scattered SOPs, and
+                end-of-day reports with one live operations layer — so plant
+                managers spend their day on decisions, not paperwork.
+              </p>
+              <div className="lw-hero-ctas lw-reveal" data-d="3">
+                <Link to="/contact" className="lw-btn lw-btn-primary">
+                  Get a demo <span className="arrow">→</span>
+                </Link>
+                <a href="#platform" className="lw-btn lw-btn-ghost">
+                  See the platform
+                </a>
+              </div>
+              <div className="lw-hero-meta lw-reveal" data-d="3">
+                <span className="avatars">
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                  <i></i>
+                </span>
+                <span>Built with 4 IKEA-supplier plants in HCMC</span>
+              </div>
             </div>
-            <h1 className="h-display">
-              {t('home.hero.h1.a')}<br />
-              {t('home.hero.h1.b')}<br />
-              <span className="ink-grad">{t('home.hero.h1.c')}</span>
-            </h1>
-            <p className="lead" style={{ maxWidth: 540 }}>{t('home.hero.sub')}</p>
-            <div className="hero-ctas">
-              <Link to="/get-a-demo" className="btn btn-primary btn-lg">{t('home.hero.cta1')}</Link>
-              <Link to="/solutions/connect-mastery" className="btn btn-ghost btn-lg">
-                {t('home.hero.cta2')} →
+            <div className="lw-reveal" data-d="2">
+              <LiveTelemetry />
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <TrustStrip />
+      <CompactStatBanner />
+
+      {/* PROBLEM — visceral scale */}
+      <section className="lw-section">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                The waste
+              </div>
+              <h2 className="lw-h2">
+                Where lean factories
+                <br />
+                still bleed hours.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              Three structural inefficiencies, measured at four HCMC plants. Each
+              anchor below is a real cost — not an estimate.
+            </p>
+          </div>
+          <div className="lw-reveal">
+            <ScaleAnchors />
+          </div>
+        </div>
+      </section>
+
+      {/* PRODUCT PICKER */}
+      <section className="lw-picker lw-section" id="platform">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                The platform
+              </div>
+              <h2 className="lw-h2">
+                One platform.
+                <br />
+                Three AI modules.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              Compliance, process, and live ops — every layer of manufacturing
+              excellence. Click a module to see what it does.
+            </p>
+          </div>
+          <div className="lw-reveal">
+            <ProductPicker />
+          </div>
+        </div>
+      </section>
+
+      {/* HOW IT WORKS — with before/after */}
+      <section className="lw-howit lw-section">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                How it works
+              </div>
+              <h2 className="lw-h2">
+                From upload to
+                <br />
+                shippable in minutes.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              One audit cycle, two timelines. Same start, same end, same quality
+              bar — measured at Talimex, Q1 2026.
+            </p>
+          </div>
+          <div className="lw-reveal" style={{ marginBottom: 64 }}>
+            <BeforeAfter />
+          </div>
+          <HowItWorks />
+        </div>
+      </section>
+
+      {/* RESULTS */}
+      <section className="lw-section">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                The proof
+              </div>
+              <h2 className="lw-h2">
+                Three plants. One quarter.
+                <br />
+                Numbers that moved.
+              </h2>
+            </div>
+            <p className="lw-lead">
+              Measured against Q4 2025 baselines at IKEA-supplier plants in HCMC —
+              not pilot fluff. Real production lines, real shipments.
+            </p>
+          </div>
+          <div className="lw-results-grid lw-reveal">
+            {RESULTS.map((r) => (
+              <div key={r.lbl} className="lw-results-cell">
+                <div className="lbl">{r.lbl.toUpperCase()}</div>
+                <div className="num">
+                  <span className="a">{r.num}</span>
+                  <span className="unit">{r.unit}</span>
+                </div>
+                <div className="desc">{r.desc}</div>
+              </div>
+            ))}
+          </div>
+          <p className="lw-results-foot lw-reveal">
+            * Measured Q1 2026 vs Q4 2025 baseline · plant-internal audit at
+            Talimex, CPC, Ngoc Son · independent third-party validation pending Q3
+            2026 · n=3 plants, 12 production lines.
+          </p>
+        </div>
+      </section>
+
+      {/* COMPARISON */}
+      <section className="lw-section tight">
+        <div className="lw-container">
+          <div className="lw-section-h lw-reveal">
+            <div>
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                The alternatives
+              </div>
+              <h2 className="lw-h2">How LeanWise compares.</h2>
+            </div>
+            <p className="lw-lead">
+              If you&apos;ve already tried spreadsheets, ERP modules, or a custom
+              MES build — here&apos;s the honest delta. Footnoted, no
+              asterisk-tricks.
+            </p>
+          </div>
+          <div className="lw-reveal">
+            <ComparisonTable />
+          </div>
+        </div>
+      </section>
+
+      {/* QUOTE ROTATOR */}
+      <section className="lw-section tight">
+        <div className="lw-container">
+          <div className="lw-reveal">
+            <QuoteRotator />
+          </div>
+        </div>
+      </section>
+
+      <ResourcesTeaser />
+
+      {/* CTA */}
+      <section className="lw-cta lw-section">
+        <div className="lw-container">
+          <div className="lw-cta-inner">
+            <div className="lw-reveal">
+              <div className="lw-eyebrow" style={{ marginBottom: 16 }}>
+                System ready
+              </div>
+              <h2>
+                Bring your factory
+                <br />
+                <em>online.</em>
+              </h2>
+              <p className="lw-lead">
+                30-minute walkthrough. Real instance, your data, your questions.
+                No slideware, no NDAs at the door.
+              </p>
+            </div>
+            <div className="lw-cta-actions lw-reveal" data-d="1">
+              <Link to="/contact" className="lw-btn lw-btn-amber lw-btn-lg">
+                Get a demo <span className="arrow">→</span>
               </Link>
+              <div className="lw-cta-links">
+                <Link to="/contact">
+                  Talk to founders <span className="arrow">→</span>
+                </Link>
+                <span className="sep">·</span>
+                <Link to="/pricing">
+                  See pricing <span className="arrow">→</span>
+                </Link>
+              </div>
             </div>
-            <div className="hero-meta">
-              <div><strong>3</strong><span className="hero-meta-l">{t('home.hero.meta.factories')}</span></div>
-              <div className="dot-sep"></div>
-              <div><strong>+8.2 pts</strong><span className="hero-meta-l">{t('home.hero.meta.oee')}</span></div>
-              <div className="dot-sep"></div>
-              <div><strong>72 hrs</strong><span className="hero-meta-l">{t('home.hero.meta.deploy')}</span></div>
-            </div>
-          </div>
-
-          <div className="hero-visual">
-            <HeroAppShot />
           </div>
         </div>
       </section>
-
-      <TrustBar />
-
-      {/* PROBLEM */}
-      <section className="section problem-sec">
-        <div className="container">
-          <SectionHeader
-            eyebrow="The compliance reality"
-            title={t('home.problem.h2')}
-            align="center"
-          />
-          <div className="problem-grid">
-            <ProblemCard n="01" title={t('home.problem.c1.t')} body={t('home.problem.c1.b')} icon="hourglass" />
-            <ProblemCard n="02" title={t('home.problem.c2.t')} body={t('home.problem.c2.b')} icon="shield" />
-            <ProblemCard n="03" title={t('home.problem.c3.t')} body={t('home.problem.c3.b')} icon="people" />
-          </div>
-          <div className="problem-transition">
-            <div className="problem-line"></div>
-            <span>{t('home.problem.transition')}</span>
-            <div className="problem-line"></div>
-          </div>
-          <div className="problem-ctas">
-            <Link to="/get-a-demo" className="btn btn-primary btn-lg">{t('home.problem.cta1')}</Link>
-            <Link to="/solutions/connect-mastery" className="btn btn-link">{t('home.problem.cta2')}</Link>
-          </div>
-        </div>
-      </section>
-
-      {/* PLATFORM */}
-      <section className="section platform-sec">
-        <div className="container">
-          <SectionHeader
-            eyebrow={t('home.platform.eyebrow')}
-            title={<>{t('home.platform.h2')}<br /><span className="muted-h">{t('home.platform.h2.b')}</span></>}
-            sub={t('home.platform.sub')}
-            align="center"
-          />
-          <div className="product-grid">
-            <ProductCard
-              num="01"
-              available
-              name={t('nav.solutions.connect')}
-              tag={t('home.p1.tag')}
-              body={t('home.p1.body')}
-              features={[t('home.p1.f1'), t('home.p1.f2'), t('home.p1.f3')]}
-              cta={t('home.p1.cta')}
-              ctaTo="/solutions/connect-mastery"
-            />
-            <ProductCard
-              num="02"
-              name={t('nav.solutions.sop')}
-              tag={t('home.p2.tag')}
-              body={t('home.p2.body')}
-              features={[t('home.p2.f1'), t('home.p2.f2'), t('home.p2.f3')]}
-              cta={t('home.p2.cta')}
-              ctaTo="/solutions/sop-mastery"
-            />
-            <ProductCard
-              num="03"
-              name={t('nav.solutions.ops')}
-              tag={t('home.p3.tag')}
-              body={t('home.p3.body')}
-              features={[t('home.p3.f1'), t('home.p3.f2'), t('home.p3.f3')]}
-              cta={t('home.p3.cta')}
-              ctaTo="/solutions/operations-mastery"
-            />
-          </div>
-        </div>
-      </section>
-
-      <ResultsStrip />
-      <FinalCTA />
-    </Page>
+    </>
   );
 }

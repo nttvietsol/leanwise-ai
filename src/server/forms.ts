@@ -56,30 +56,6 @@ async function sendEmail(input: SendInput): Promise<void> {
   }
 }
 
-/* ─────────── Contact form ─────────── */
-export const submitContact = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (d: { name: string; email: string; subject?: string; message: string }) => {
-      if (!d.name?.trim()) throw new Error('Name is required');
-      if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-      if (!d.message?.trim()) throw new Error('Message is required');
-      return d;
-    },
-  )
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Contact] ${data.subject?.trim() || `Message from ${data.name}`}`,
-      replyTo: `${data.name} <${data.email}>`,
-      bodyText:
-        `New contact message from leanwise.ai\n\n` +
-        `Name:    ${data.name}\n` +
-        `Email:   ${data.email}\n` +
-        `Subject: ${data.subject || '—'}\n\n` +
-        `Message:\n${data.message}\n`,
-    });
-    return { ok: true };
-  });
-
 /* ─────────── Demo request ─────────── */
 export const submitDemo = createServerFn({ method: 'POST' })
   .inputValidator(
@@ -116,51 +92,29 @@ export const submitDemo = createServerFn({ method: 'POST' })
 
 /* ─────────── Waitlist ─────────── */
 export const joinWaitlist = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string; company?: string; product?: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    return d;
-  })
+  .inputValidator(
+    (d: {
+      email: string;
+      name?: string;
+      company?: string;
+      notes?: string;
+      product?: string;
+    }) => {
+      if (!d.email || !EMAIL_RE.test(d.email))
+        throw new Error('Valid email is required');
+      return d;
+    },
+  )
   .handler(async ({ data }) => {
     await sendEmail({
       subject: `[Waitlist] ${data.product || 'Product'} — ${data.email}`,
       bodyText:
         `New waitlist signup\n\n` +
+        `Name:    ${data.name || '—'}\n` +
         `Email:   ${data.email}\n` +
         `Company: ${data.company || '—'}\n` +
+        `Notes:   ${data.notes || '—'}\n` +
         `Product: ${data.product || '—'}\n`,
-    });
-    return { ok: true };
-  });
-
-/* ─────────── Newsletter ─────────── */
-export const subscribeNewsletter = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    return d;
-  })
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Newsletter] New subscriber — ${data.email}`,
-      bodyText: `New newsletter subscription: ${data.email}\n`,
-    });
-    return { ok: true };
-  });
-
-/* ─────────── Resource gate (lead capture) ─────────── */
-export const requestResource = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string; name?: string; resourceSlug: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    if (!d.resourceSlug) throw new Error('Resource slug is required');
-    return d;
-  })
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Resource] ${data.resourceSlug} — ${data.email}`,
-      bodyText:
-        `Resource request\n\n` +
-        `Resource: ${data.resourceSlug}\n` +
-        `Name:     ${data.name || '—'}\n` +
-        `Email:    ${data.email}\n`,
     });
     return { ok: true };
   });

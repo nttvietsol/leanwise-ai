@@ -1,35 +1,31 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
-test.describe('CONNECT Mastery product page', () => {
-  test('renders hero, 3 features, results, steps, testimonials', async ({ page }) => {
+test.describe('CONNECT Mastery page', () => {
+  test('renders hero, anatomy, capabilities, results', async ({ page }) => {
     await page.goto('/solutions/connect-mastery');
 
-    // Hero
-    await expect(page.getByRole('heading', { name: 'CONNECT Mastery', exact: true })).toBeVisible();
-    await expect(page.getByText('Eliminate Compliance Waste')).toBeVisible();
-    await expect(page.getByText(/Available now/i).first()).toBeVisible();
+    await expect(page).toHaveTitle(/CONNECT Mastery/);
+    await expect(
+      page.getByRole('heading', { name: /CONNECT audits/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByText('MOD.01 · LIVE · Q1 2026')).toBeVisible();
 
-    // Three feature blocks
-    await expect(page.getByRole('heading', { name: /Catch the Errors That Actually Fail Audits/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Every Requirement in Your TSS/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /One Click\. Walk Away\. Results Waiting/ })).toBeVisible();
+    // Anatomy stages
+    await expect(page.getByRole('heading', { name: 'Ingest' })).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Report' })).toBeVisible();
 
-    // Results stats
-    await expect(page.getByText('75%').first()).toBeVisible();
-    await expect(page.getByText('99%').first()).toBeVisible();
+    // Capabilities ledger
+    await expect(page.getByText('Semantic requirement matching')).toBeVisible();
 
-    // Steps
-    await expect(page.getByRole('heading', { name: /Up and Running in 2 Weeks/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Book Demo' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '1 Week Setup' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Start Saving Time' })).toBeVisible();
+    // Results strip
+    await expect(page.getByText('FASTER AUDIT CYCLE')).toBeVisible();
+  });
 
-    // Testimonials
-    await expect(page.getByText(/full afternoon now takes under an hour/)).toBeVisible();
-
-    // Final CTA + trust badges
-    await expect(page.getByRole('heading', { name: /Ready to Master CONNECT/ })).toBeVisible();
-    await expect(page.getByText(/No credit card needed/)).toBeVisible();
-    await expect(page.getByText(/2 weeks to full deployment/)).toBeVisible();
+  test('CTA links to contact', async ({ page }) => {
+    await page.goto('/solutions/connect-mastery');
+    await hydrated(page);
+    await page.getByRole('link', { name: /Book a demo/ }).click();
+    await expect(page).toHaveURL('/contact');
   });
 });

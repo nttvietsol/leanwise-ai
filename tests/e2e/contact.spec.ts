@@ -1,36 +1,34 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
-test.describe('Contact form', () => {
-  test('shows side panel info', async ({ page }) => {
+test.describe('Contact page', () => {
+  test('shows hero and direct-line panel', async ({ page }) => {
     await page.goto('/contact');
-
-    await expect(page.getByRole('heading', { name: 'Talk to Our Team' })).toBeVisible();
-    await expect(page.getByText('support@leanwise.ai').first()).toBeVisible();
-    await expect(page.getByText('Ho Chi Minh City, Vietnam').first()).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Bring your audit/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByText('Direct line · founders')).toBeVisible();
+    await expect(page.getByText('founders@leanwise.ai')).toBeVisible();
+    await expect(page.getByText('Office · HCMC')).toBeVisible();
   });
 
   test('rejects empty form with field errors', async ({ page }) => {
     await page.goto('/contact');
-    await page.getByRole('button', { name: 'Send message' }).click();
-
+    await hydrated(page);
+    await page.getByRole('button', { name: 'Request demo' }).click();
     await expect(page.getByText('Required').first()).toBeVisible();
-    await expect(page.getByText(/Please enter a valid email/)).toBeVisible();
-    await expect(page.getByText('Tell us a bit about what you need')).toBeVisible();
+    await expect(page.getByText('Please enter a valid work email.')).toBeVisible();
   });
 
-  test('rejects invalid email but accepts valid', async ({ page }) => {
+  test('submits successfully with valid input', async ({ page }) => {
     await page.goto('/contact');
-    await page.getByLabel('Full name *').fill('Test User');
-    await page.getByLabel('Email *').fill('not-an-email');
-    await page.getByLabel('Message *').fill('Hi from the e2e suite.');
-    await page.getByRole('button', { name: 'Send message' }).click();
-    await expect(page.getByText(/Please enter a valid email/)).toBeVisible();
-
-    await page.getByLabel('Email *').fill('test@example.com');
-    await page.getByRole('button', { name: 'Send message' }).click();
-
-    await expect(page.getByRole('heading', { name: 'Message sent.' })).toBeVisible();
-    await expect(page.getByText('test@example.com')).toBeVisible();
-    await expect(page.getByText('Test User')).toBeVisible();
+    await hydrated(page);
+    await page.getByLabel('Name *').fill('Test User');
+    await page.getByLabel('Plant / company *').fill('Talimex');
+    await page.getByLabel('Work email *').fill('test@example.com');
+    await page.getByRole('button', { name: 'Request demo' }).click();
+    await expect(
+      page.getByRole('heading', { name: /be in touch within one business day/ }),
+    ).toBeVisible();
   });
 });

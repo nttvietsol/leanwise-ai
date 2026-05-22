@@ -1,170 +1,182 @@
-import { useEffect, useRef, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
-import { useI18n } from '~/i18n';
-import { LogoFull } from './logo';
-import { LangToggle } from './lang-toggle';
+import { Logo } from './logo';
+
+/* ────── Top status bar — live node tick ────── */
+const NODES = ['TALIMEX', 'CPC', 'NGOC SON', 'SEDO'];
+
+export function StatusBar({ build = '26.05.07' }: { build?: string }) {
+  const [nodeIdx, setNodeIdx] = useState(0);
+  useEffect(() => {
+    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
+    const id = setInterval(() => setNodeIdx((i) => (i + 1) % NODES.length), 4200);
+    return () => clearInterval(id);
+  }, []);
+  return (
+    <div className="lw-statusbar">
+      <div className="lw-container">
+        <div className="row">
+          <div className="left">
+            <span className="live">SYS · ONLINE</span>
+            <span>
+              NODE ·{' '}
+              <span key={nodeIdx} className="lw-tick">
+                {NODES[nodeIdx]}
+              </span>
+            </span>
+          </div>
+          <div className="meta">
+            <span>UPTIME · 99.97%</span>
+            <span>BUILD · {build}</span>
+            <span>HCMC · UTC+7</span>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+/* ────── Primary nav ────── */
+const LINKS = [
+  { name: 'Platform', to: '/' },
+  { name: 'CONNECT', to: '/solutions/connect-mastery' },
+  { name: 'SOP', to: '/solutions/sop-mastery' },
+  { name: 'Operations', to: '/solutions/operations-mastery' },
+  { name: 'Pricing', to: '/pricing' },
+  { name: 'Customers', to: '/customers' },
+  { name: 'Resources', to: '/resources' },
+  { name: 'About', to: '/about' },
+] as const;
+
+function activeName(pathname: string): string {
+  if (pathname === '/') return 'Platform';
+  if (pathname.startsWith('/case-studies') || pathname.startsWith('/customers'))
+    return 'Customers';
+  if (pathname.startsWith('/resources') || pathname.startsWith('/blog'))
+    return 'Resources';
+  const hit = LINKS.find((l) => l.to !== '/' && pathname.startsWith(l.to));
+  return hit ? hit.name : '';
+}
 
 export function Nav() {
-  const { t, lang, setLang } = useI18n();
   const { pathname } = useLocation();
-  const [solutionsOpen, setSolutionsOpen] = useState(false);
+  const [open, setOpen] = useState(false);
   const [scrolled, setScrolled] = useState(false);
-  const [mobileOpen, setMobileOpen] = useState(false);
-  const closeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
+  const active = activeName(pathname);
 
   useEffect(() => {
-    const onScroll = () => setScrolled(window.scrollY > 8);
+    const onScroll = () => setScrolled(window.scrollY > 80);
     onScroll();
     window.addEventListener('scroll', onScroll, { passive: true });
     return () => window.removeEventListener('scroll', onScroll);
   }, []);
 
   useEffect(() => {
-    setMobileOpen(false);
-    setSolutionsOpen(false);
+    setOpen(false);
   }, [pathname]);
 
-  const openDrop = () => {
-    if (closeTimer.current) clearTimeout(closeTimer.current);
-    setSolutionsOpen(true);
-  };
-  const closeDrop = () => {
-    closeTimer.current = setTimeout(() => setSolutionsOpen(false), 120);
-  };
-
-  const isActive = (path: string) =>
-    pathname === path || (path !== '/' && pathname.startsWith(path));
-
   return (
-    <header className={`nav ${scrolled ? 'nav-scrolled' : ''}`}>
-      <div className="container-wide nav-inner">
-        <LogoFull />
-
-        <nav className="nav-links" aria-label="Primary">
-          <div
-            className="nav-item nav-item-drop"
-            onMouseEnter={openDrop}
-            onMouseLeave={closeDrop}
-          >
-            <button
-              className={`nav-link ${isActive('/solutions') ? 'is-active' : ''}`}
-              aria-expanded={solutionsOpen}
-              onClick={() => setSolutionsOpen(o => !o)}
-            >
-              {t('nav.solutions')}
-              <svg
-                width="10"
-                height="10"
-                viewBox="0 0 10 10"
-                style={{
-                  transform: solutionsOpen ? 'rotate(180deg)' : 'none',
-                  transition: 'transform .2s',
-                }}
+    <header className={`lw-nav ${scrolled ? 'scrolled' : ''}`}>
+      <div className="lw-container">
+        <div className="row">
+          <Logo />
+          <nav className="lw-nav-links" aria-label="Primary">
+            {LINKS.map((l) => (
+              <Link
+                key={l.name}
+                to={l.to}
+                className={active === l.name ? 'active' : ''}
               >
-                <path
-                  d="M2 4l3 3 3-3"
-                  stroke="currentColor"
-                  strokeWidth="1.5"
-                  fill="none"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
+                {l.name}
+              </Link>
+            ))}
+          </nav>
+          <div className="lw-nav-cta-row">
+            <Link to="/contact" className="lw-btn lw-btn-ghost">
+              Talk to founders
+            </Link>
+            <Link to="/contact" className="lw-btn lw-btn-primary">
+              <span>Get a demo</span> <span className="arrow">→</span>
+            </Link>
+            <button
+              className="lw-nav-toggle"
+              aria-label="Menu"
+              onClick={() => setOpen(true)}
+            >
+              <span></span>
             </button>
-            {solutionsOpen && (
-              <div className="dropdown" onMouseEnter={openDrop} onMouseLeave={closeDrop}>
-                <Link to="/solutions/connect-mastery" className="drop-item">
-                  <div className="drop-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <rect x="2.5" y="2.5" width="15" height="15" rx="2.5" stroke="currentColor" strokeWidth="1.5" />
-                      <path d="M6 10.5L9 13.5L14.5 7.5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="drop-title">
-                      {t('nav.solutions.connect')} <span className="tag-avail">{t('nav.available')}</span>
-                    </div>
-                    <div className="drop-desc">{t('nav.solutions.connect.desc')}</div>
-                  </div>
-                </Link>
-                <Link to="/solutions/sop-mastery" className="drop-item">
-                  <div className="drop-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M5 4h10M5 8h10M5 12h7M5 16h5" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="drop-title">
-                      {t('nav.solutions.sop')} <span className="tag-rd">{t('nav.rd')}</span>
-                    </div>
-                    <div className="drop-desc">{t('nav.solutions.sop.desc')}</div>
-                  </div>
-                </Link>
-                <Link to="/solutions/operations-mastery" className="drop-item">
-                  <div className="drop-icon">
-                    <svg width="20" height="20" viewBox="0 0 20 20" fill="none">
-                      <path d="M3 14L7 9L11 12L17 5" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" />
-                      <circle cx="17" cy="5" r="1.6" fill="currentColor" />
-                    </svg>
-                  </div>
-                  <div>
-                    <div className="drop-title">
-                      {t('nav.solutions.ops')} <span className="tag-rd">{t('nav.rd')}</span>
-                    </div>
-                    <div className="drop-desc">{t('nav.solutions.ops.desc')}</div>
-                  </div>
-                </Link>
-              </div>
-            )}
           </div>
-
-          <Link to="/about" className={`nav-link ${isActive('/about') ? 'is-active' : ''}`}>
-            {t('nav.about')}
-          </Link>
-          <Link to="/blog" className={`nav-link ${isActive('/blog') ? 'is-active' : ''}`}>
-            {t('nav.blog')}
-          </Link>
-          <Link to="/resources" className={`nav-link ${isActive('/resources') ? 'is-active' : ''}`}>
-            {t('nav.resources')}
-          </Link>
-          <Link to="/contact" className={`nav-link ${isActive('/contact') ? 'is-active' : ''}`}>
-            {t('nav.contact')}
-          </Link>
-        </nav>
-
-        <div className="nav-actions">
-          <LangToggle lang={lang} setLang={setLang} />
-          <Link to="/get-a-demo" className="btn btn-primary nav-cta">
-            {t('nav.demo')}
-          </Link>
-          <button
-            className="nav-burger"
-            aria-label="Menu"
-            onClick={() => setMobileOpen(o => !o)}
-          >
-            <svg width="20" height="20" viewBox="0 0 20 20">
-              <path
-                d="M3 6h14M3 10h14M3 14h14"
-                stroke="currentColor"
-                strokeWidth="1.6"
-                strokeLinecap="round"
-              />
-            </svg>
-          </button>
         </div>
       </div>
 
-      <div className={`mobile-menu${mobileOpen ? '' : ' is-hidden'}`}>
-        <Link to="/solutions/connect-mastery">{t('nav.solutions.connect')}</Link>
-        <Link to="/solutions/sop-mastery">{t('nav.solutions.sop')}</Link>
-        <Link to="/about">{t('nav.about')}</Link>
-        <Link to="/blog">{t('nav.blog')}</Link>
-        <Link to="/resources">{t('nav.resources')}</Link>
-        <Link to="/contact">{t('nav.contact')}</Link>
-        <Link to="/get-a-demo" className="btn btn-primary">
-          {t('nav.demo')}
-        </Link>
-      </div>
+      {open && (
+        <div
+          style={{
+            position: 'fixed',
+            inset: 0,
+            background: 'rgba(10,22,40,0.6)',
+            backdropFilter: 'blur(6px)',
+            zIndex: 100,
+          }}
+          onClick={() => setOpen(false)}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-label="Menu"
+            style={{
+              background: '#fff',
+              maxWidth: 360,
+              marginLeft: 'auto',
+              height: '100%',
+              padding: 24,
+              display: 'flex',
+              flexDirection: 'column',
+              gap: 4,
+            }}
+            onClick={(e) => e.stopPropagation()}
+          >
+            <div
+              style={{
+                display: 'flex',
+                justifyContent: 'space-between',
+                alignItems: 'center',
+                marginBottom: 16,
+              }}
+            >
+              <Logo />
+              <button
+                onClick={() => setOpen(false)}
+                aria-label="Close menu"
+                style={{ fontSize: 20, color: 'var(--ink-3)' }}
+              >
+                ✕
+              </button>
+            </div>
+            {LINKS.map((l) => (
+              <Link
+                key={l.name}
+                to={l.to}
+                style={{
+                  padding: '14px 8px',
+                  borderBottom: '1px solid var(--line)',
+                  fontSize: 16,
+                  color: 'var(--ink-2)',
+                }}
+              >
+                {l.name}
+              </Link>
+            ))}
+            <Link
+              to="/contact"
+              className="lw-btn lw-btn-primary"
+              style={{ marginTop: 16, justifyContent: 'center' }}
+            >
+              Get a demo <span className="arrow">→</span>
+            </Link>
+          </div>
+        </div>
+      )}
     </header>
   );
 }

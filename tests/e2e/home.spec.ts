@@ -1,55 +1,31 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
 test.describe('Home page', () => {
-  test('loads with hero, products, stats, and final CTA', async ({ page }) => {
+  test('loads hero, trust strip, and core sections', async ({ page }) => {
     await page.goto('/');
-
     await expect(page).toHaveTitle(/LeanWise AI/);
 
-    // Hero
-    await expect(page.getByText('Lean Thinking. AI Speed. Real Results.').first()).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Your Factory/ })).toBeVisible();
-    await expect(page.getByRole('link', { name: 'Get a Demo' }).first()).toBeVisible();
-    await expect(page.getByRole('link', { name: /Explore the Platform/ })).toBeVisible();
-
-    // Hero stats
-    await expect(page.getByText(/4\s*factories live/)).toBeVisible();
-    await expect(page.getByText(/3,000\+\s*docs processed/)).toBeVisible();
-    await expect(page.getByText(/75%\s*time saved/)).toBeVisible();
-
-    // Trust bar
-    await expect(page.getByText(/Trusted by manufacturers supplying IKEA/)).toBeVisible();
-
-    // Problem section
     await expect(
-      page.getByRole('heading', { name: /CONNECT Compliance Is Complex/ }),
+      page.getByRole('heading', { name: /operating system/i, level: 1 }),
     ).toBeVisible();
-    await expect(page.getByText("There's a smarter way.")).toBeVisible();
+    await expect(page.getByRole('link', { name: /Get a demo/ }).first()).toBeVisible();
 
-    // Platform cards
-    await expect(page.getByText(/One Platform\. Three AI Products\./)).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'CONNECT Mastery' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'SOP Mastery' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Operations Mastery' })).toBeVisible();
+    await expect(page.getByText('Live at IKEA-supplier plants')).toBeVisible();
 
-    // Results stats
-    await expect(page.getByText('75%').first()).toBeVisible();
-    await expect(page.getByText('3,000+').first()).toBeVisible();
-
-    // Final CTA
-    await expect(page.getByRole('heading', { name: /Ready to See It in Action/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /still bleed hours/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /Three AI modules/ })).toBeVisible();
+    await expect(page.getByRole('heading', { name: /How LeanWise compares/ })).toBeVisible();
   });
 
-  test('hero CTA navigates to /get-a-demo', async ({ page }) => {
+  test('product picker switches modules', async ({ page }) => {
     await page.goto('/');
-    await page.getByRole('link', { name: 'Get a Demo' }).first().click();
-    await expect(page).toHaveURL('/get-a-demo');
-    await expect(page.getByRole('heading', { name: /See CONNECT Mastery in Action/ })).toBeVisible();
-  });
-
-  test('explore platform navigates to CONNECT Mastery', async ({ page }) => {
-    await page.goto('/');
-    await page.getByRole('link', { name: /Explore the Platform/ }).click();
-    await expect(page).toHaveURL('/solutions/connect-mastery');
+    await hydrated(page);
+    const sopTab = page.getByRole('tab', { name: /SOP Mastery/ });
+    await sopTab.scrollIntoViewIfNeeded();
+    await sopTab.click();
+    await expect(
+      page.getByRole('heading', { name: 'SOP Mastery', exact: true }),
+    ).toBeVisible();
   });
 });
