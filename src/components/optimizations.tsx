@@ -334,28 +334,28 @@ const TEASER_ITEMS: TeaserItem[] = [
     tag: 'Lean ops',
     title: 'The 6-hour audit is a choice, not a constraint',
     date: 'MAY 2026',
-    // slug intentionally omitted until the post is authored + seeded into prod
-    // D1 — a /blog/<slug> link to an unseeded post renders a 404. Routes to
-    // /resources via the fallback below.
+    slug: 'the-auditor-doesnt-care',
   },
   {
-    kind: 'GUIDE',
-    tag: 'Playbook',
-    title: 'A field guide to AI in IKEA-supplier compliance',
+    kind: 'CASE',
+    tag: 'Case study',
+    title: 'How Talimex eliminated 11 of 12 audit defects',
     date: 'APR 2026',
+    slug: 'how-talimex-eliminated-11-of-12',
   },
   {
     kind: 'METHOD',
     tag: 'Audit',
     title: 'Mistake-proofing for paper-based plants',
     date: 'APR 2026',
-    // slug omitted until authored + seeded (see note above); routes to /resources.
+    slug: 'mistake-proofing-for-paper-based-plants',
   },
   {
-    kind: 'RESEARCH',
-    tag: 'Benchmark',
-    title: 'Q1 2026 fleet benchmarks: OEE, defects, throughput',
+    kind: 'ESSAY',
+    tag: 'Lean ops',
+    title: 'Andon on a 200-person line: problems made visible',
     date: 'MAR 2026',
+    slug: 'andon-on-a-200-person-line',
   },
 ];
 
