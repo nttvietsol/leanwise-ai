@@ -176,6 +176,10 @@
   .lw-scale-foot { grid-template-columns: 1fr; gap: 16px; }
   .lw-scale-foot > div { border-left: 0; padding: 0 0 16px; border-bottom: 1px solid var(--line); }
   .lw-scale-foot > div:last-child { border-bottom: 0; padding-bottom: 0; }
+  /* Anchor the end cards to the track edges instead of centering them — a
+     centered card on the first/last tick spills past the viewport on phones. */
+  .lw-scale .tick:first-child .card { left: 0; transform: none; }
+  .lw-scale .tick:last-child .card { left: auto; right: 0; transform: none; }
 }
 @media (max-width: 640px) {
   .lw-scale .tick .card { display: none; }
@@ -259,6 +263,11 @@
   .lw-compare th, .lw-compare td { padding: 12px 8px; }
   .lw-compare th .n { font-size: 12px; }
   .lw-compare th .s { font-size: 9px; letter-spacing: 0.08em; }
+}
+@media (max-width: 400px) {
+  /* Tighten the 5-column table so it fits the narrowest phones without the
+     last column being clipped by .lw-compare's overflow: hidden. */
+  .lw-compare th, .lw-compare td { padding: 11px 5px; }
 }
 
 /* ────────── BeforeAfter ────────── */

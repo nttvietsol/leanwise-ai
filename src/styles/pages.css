@@ -225,9 +225,14 @@
   padding: 32px;
 }
 .lw-form .row { display: flex; flex-direction: column; gap: 6px; margin-bottom: 18px; }
-.lw-form .row.split { display: grid; grid-template-columns: 1fr 1fr; gap: 16px; }
+/* minmax(0, …) so the paired columns can shrink below the inputs' intrinsic
+   width; a bare 1fr would force the row wider than a phone viewport and blow
+   out the whole page layout. Paired fields stack on small phones. */
+.lw-form .row.split { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 16px; }
+@media (max-width: 560px) { .lw-form .row.split { grid-template-columns: 1fr; } }
 .lw-form label { font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.14em; color: var(--ink-4); text-transform: uppercase; }
 .lw-form input, .lw-form textarea, .lw-form select {
+  width: 100%; min-width: 0;
   border: 1px solid var(--line); border-radius: var(--r-2);
   padding: 12px 14px; font-size: 14px; color: var(--ink); background: #fff;
   transition: border-color .18s, box-shadow .18s;

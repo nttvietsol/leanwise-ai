@@ -67,7 +67,7 @@ test.describe('SEO + static assets', () => {
       '/product',
       '/pricing',
       '/resources',
-      '/blog/the-auditor-doesnt-care',
+      '/case-studies/talimex',
     ]) {
       expect(body).toContain(`https://leanwise.ai${path}`);
     }

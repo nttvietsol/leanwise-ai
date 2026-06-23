@@ -334,7 +334,9 @@ const TEASER_ITEMS: TeaserItem[] = [
     tag: 'Lean ops',
     title: 'The 6-hour audit is a choice, not a constraint',
     date: 'MAY 2026',
-    slug: 'the-auditor-doesnt-care',
+    // slug intentionally omitted until the post is authored + seeded into prod
+    // D1 — a /blog/<slug> link to an unseeded post renders a 404. Routes to
+    // /resources via the fallback below.
   },
   {
     kind: 'GUIDE',
@@ -347,7 +349,7 @@ const TEASER_ITEMS: TeaserItem[] = [
     tag: 'Audit',
     title: 'Mistake-proofing for paper-based plants',
     date: 'APR 2026',
-    slug: 'mistake-proofing-for-paper-based-plants',
+    // slug omitted until authored + seeded (see note above); routes to /resources.
   },
   {
     kind: 'RESEARCH',
