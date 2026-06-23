@@ -10,31 +10,51 @@
   },
   "observability": {
     "enabled": true
-  }
-
-  /* Bindings — uncomment as you provision them in Cloudflare:
+  },
 
   "vars": {
-    "PUBLIC_GA_ID": "",
-    "PUBLIC_META_PIXEL_ID": "",
-    "RESEND_FROM": "hello@leanwise.ai",
-    "RESEND_TO": "support@leanwise.ai"
+    /* Cloudflare Access — fill these in after creating the Access application
+       (Zero Trust dashboard → Access → Applications → Add a self-hosted app
+       for path /admin). Not secrets — safe to commit.
+         CF_ACCESS_TEAM_DOMAIN  e.g. https://leanwise.cloudflareaccess.com
+         CF_ACCESS_AUD          the Application Audience (AUD) tag */
+    "CF_ACCESS_TEAM_DOMAIN": "",
+    "CF_ACCESS_AUD": "",
+
+    /* Outbound form email — see the send_email binding below.
+       MAIL_FROM must be on a domain onboarded to Email Sending.
+       MAIL_TO is the notification recipient — any address; Email Sending has
+       no destination-verification step. Personal inbox for testing; switch
+       to support@leanwise.ai for production. */
+    "MAIL_FROM": "noreply@leanwise.ai",
+    "MAIL_TO": "nthanhtrung198@gmail.com"
   },
 
   "d1_databases": [
-    { "binding": "DB", "database_name": "leanwise-ai", "database_id": "TODO" }
+    {
+      "binding": "DB",
+      "database_name": "leanwise-ai",
+      "database_id": "961307df-cf2e-4f36-990e-27b389845c35"
+    }
   ],
 
-  "kv_namespaces": [
-    { "binding": "CACHE", "id": "TODO" }
-  ],
+  "kv_namespaces": [{ "binding": "CACHE", "id": "06e346b485c54afea34a1177e4caab47" }],
 
+  /* Outbound form email via Cloudflare Email Sending (no API keys).
+     `src/server/forms.ts` calls env.MAIL.send({ from, to, ... }), which
+     delivers to any recipient. Prerequisites (one-time, Cloudflare dashboard
+     — not code):
+       1. Workers paid plan — Email Sending is a paid feature.
+       2. The MAIL_FROM domain (leanwise.ai) onboarded to Email Sending:
+          Compute > Email Service > Email Sending > Onboard Domain — this adds
+          the SPF/DKIM DNS records. The domain must use Cloudflare DNS.
+     `remote: true` lets `wrangler dev` send through the real service; under
+     `vite dev` the forms handler logs instead (import.meta.env.DEV guard). */
   "send_email": [
-    { "name": "MAIL", "destination_address": "support@leanwise.ai" }
+    {
+      "name": "MAIL",
+      "allowed_sender_addresses": ["noreply@leanwise.ai"],
+      "remote": true
+    }
   ]
-  */
-
-  /* Secrets (set via `wrangler secret put RESEND_API_KEY`):
-     - RESEND_API_KEY
-  */
 }

@@ -42,7 +42,7 @@ npx wrangler login
 pnpm deploy
 ```
 
-Configure secrets in the Cloudflare dashboard or via `wrangler secret put RESEND_API_KEY`.
+Form submissions email through **Cloudflare Email Sending** (`send_email` binding, no API keys). Requires the Workers paid plan and the `MAIL_FROM` domain onboarded to Email Sending — see `wrangler.jsonc`.
 
 For local Worker testing, copy `.env.example` to `.dev.vars` and run `npx wrangler dev`.
 

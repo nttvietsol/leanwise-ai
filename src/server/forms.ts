@@ -1,4 +1,5 @@
 import { createServerFn } from '@tanstack/react-start';
+import { env } from 'cloudflare:workers';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
@@ -9,76 +10,36 @@ type SendInput = {
 };
 
 /**
- * Read an env var across runtimes:
- *  - Cloudflare Workers: globalThis.process.env is provided by `nodejs_compat`
- *    for `vars` declared in wrangler.jsonc; secrets land there too via the
- *    `@cloudflare/vite-plugin` adapter.
- *  - Node dev: process.env directly.
- *  - Browser: never reached for server-only code paths.
+ * Send a form-notification email through Cloudflare Email Sending (the
+ * `send_email` binding `MAIL` in wrangler.jsonc), using its structured
+ * builder API — no MIME assembly, no API keys. Requires the MAIL_FROM domain
+ * to be onboarded to Email Sending (see the Deployment notes in CLAUDE.md).
+ *
+ * Under `vite dev` (`import.meta.env.DEV`) the send is skipped and logged, so
+ * the e2e suite can exercise the success-state UI without delivering real mail.
+ * To test real delivery, deploy and submit a form against the live Worker.
  */
-function envVar(key: string): string | undefined {
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  const proc = (globalThis as any).process as
-    | { env?: Record<string, string | undefined> }
-    | undefined;
-  return proc?.env?.[key];
-}
-
 async function sendEmail(input: SendInput): Promise<void> {
-  const apiKey = envVar('RESEND_API_KEY');
-  const from = envVar('RESEND_FROM');
-  const to = envVar('RESEND_TO');
-
-  if (!apiKey || !from || !to) {
-    // Dev fallback: log to server console; production should be configured.
-    console.log('[forms] Email not sent (RESEND_* not configured):', input);
+  if (import.meta.env.DEV) {
+    console.log('[forms] Email (dev — not sent):', input);
     return;
   }
 
-  const res = await fetch('https://api.resend.com/emails', {
-    method: 'POST',
-    headers: {
-      'Content-Type': 'application/json',
-      Authorization: `Bearer ${apiKey}`,
-    },
-    body: JSON.stringify({
-      from,
-      to,
-      subject: input.subject,
-      text: input.bodyText,
-      reply_to: input.replyTo,
-    }),
-  });
-
-  if (!res.ok) {
-    const t = await res.text();
-    throw new Error(`Email send failed: ${res.status} ${t}`);
+  const from = env.MAIL_FROM;
+  const to = env.MAIL_TO;
+  if (!env.MAIL || !from || !to) {
+    console.log('[forms] Email not sent (MAIL binding not configured):', input);
+    return;
   }
-}
 
-/* ─────────── Contact form ─────────── */
-export const submitContact = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (d: { name: string; email: string; subject?: string; message: string }) => {
-      if (!d.name?.trim()) throw new Error('Name is required');
-      if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-      if (!d.message?.trim()) throw new Error('Message is required');
-      return d;
-    },
-  )
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Contact] ${data.subject?.trim() || `Message from ${data.name}`}`,
-      replyTo: `${data.name} <${data.email}>`,
-      bodyText:
-        `New contact message from leanwise.ai\n\n` +
-        `Name:    ${data.name}\n` +
-        `Email:   ${data.email}\n` +
-        `Subject: ${data.subject || '—'}\n\n` +
-        `Message:\n${data.message}\n`,
-    });
-    return { ok: true };
+  await env.MAIL.send({
+    from: { email: from, name: 'LeanWise AI' },
+    to,
+    subject: input.subject,
+    text: input.bodyText,
+    replyTo: input.replyTo,
   });
+}
 
 /* ─────────── Demo request ─────────── */
 export const submitDemo = createServerFn({ method: 'POST' })
@@ -114,53 +75,3 @@ export const submitDemo = createServerFn({ method: 'POST' })
     return { ok: true };
   });
 
-/* ─────────── Waitlist ─────────── */
-export const joinWaitlist = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string; company?: string; product?: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    return d;
-  })
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Waitlist] ${data.product || 'Product'} — ${data.email}`,
-      bodyText:
-        `New waitlist signup\n\n` +
-        `Email:   ${data.email}\n` +
-        `Company: ${data.company || '—'}\n` +
-        `Product: ${data.product || '—'}\n`,
-    });
-    return { ok: true };
-  });
-
-/* ─────────── Newsletter ─────────── */
-export const subscribeNewsletter = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    return d;
-  })
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Newsletter] New subscriber — ${data.email}`,
-      bodyText: `New newsletter subscription: ${data.email}\n`,
-    });
-    return { ok: true };
-  });
-
-/* ─────────── Resource gate (lead capture) ─────────── */
-export const requestResource = createServerFn({ method: 'POST' })
-  .inputValidator((d: { email: string; name?: string; resourceSlug: string }) => {
-    if (!d.email || !EMAIL_RE.test(d.email)) throw new Error('Valid email is required');
-    if (!d.resourceSlug) throw new Error('Resource slug is required');
-    return d;
-  })
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Resource] ${data.resourceSlug} — ${data.email}`,
-      bodyText:
-        `Resource request\n\n` +
-        `Resource: ${data.resourceSlug}\n` +
-        `Name:     ${data.name || '—'}\n` +
-        `Email:    ${data.email}\n`,
-    });
-    return { ok: true };
-  });

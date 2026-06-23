@@ -1,0 +1,281 @@
+/* LeanWise AI — admin console (gated by Cloudflare Access) */
+
+.adm-bar {
+  background: var(--ink);
+  color: #fff;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+  position: sticky;
+  top: 0;
+  z-index: 50;
+}
+.adm-bar .row {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  height: 56px;
+  gap: 16px;
+}
+.adm-bar .brand {
+  display: inline-flex;
+  align-items: center;
+  gap: 10px;
+  font-weight: 600;
+  color: #fff;
+  font-size: 15px;
+}
+.adm-bar .brand .tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  background: var(--amber);
+  color: var(--ink);
+  padding: 3px 7px;
+  border-radius: var(--r-2);
+}
+.adm-bar .right {
+  display: inline-flex;
+  align-items: center;
+  gap: 20px;
+}
+.adm-bar .who {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  color: rgba(255, 255, 255, 0.5);
+  letter-spacing: 0.04em;
+}
+.adm-bar a {
+  color: rgba(255, 255, 255, 0.72);
+  font-size: 13px;
+}
+.adm-bar a:hover {
+  color: #fff;
+}
+
+.adm-main {
+  padding: clamp(28px, 4vw, 56px) 0 96px;
+  min-height: 70vh;
+}
+.adm-head {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-end;
+  gap: 16px;
+  margin-bottom: 24px;
+  flex-wrap: wrap;
+}
+.adm-section {
+  margin-bottom: 48px;
+}
+
+/* tables */
+.adm-table {
+  width: 100%;
+  border-collapse: collapse;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  overflow: hidden;
+}
+.adm-table th {
+  text-align: left;
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+  padding: 12px 16px;
+  background: var(--paper-2);
+  border-bottom: 1px solid var(--line);
+}
+.adm-table td {
+  padding: 13px 16px;
+  border-bottom: 1px solid var(--line);
+  font-size: 14px;
+  vertical-align: middle;
+}
+.adm-table tr:last-child td {
+  border-bottom: 0;
+}
+.adm-table tbody tr:hover td {
+  background: var(--paper-2);
+}
+.adm-table .title {
+  font-weight: 500;
+  color: var(--ink);
+  letter-spacing: -0.01em;
+}
+.adm-empty {
+  padding: 32px 16px;
+  text-align: center;
+  color: var(--ink-4);
+  font-size: 14px;
+}
+
+.adm-tag {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  padding: 3px 8px;
+  border-radius: 100px;
+  white-space: nowrap;
+}
+.adm-tag.published {
+  background: rgba(74, 124, 42, 0.14);
+  color: var(--ok);
+}
+.adm-tag.draft {
+  background: var(--paper-3);
+  color: var(--ink-3);
+}
+.adm-actions {
+  display: inline-flex;
+  gap: 6px;
+}
+.adm-btn-sm {
+  font-size: 12px;
+  padding: 6px 12px;
+}
+.adm-btn-danger {
+  color: var(--err);
+  border: 1px solid color-mix(in oklab, var(--err) 35%, transparent);
+  background: transparent;
+  border-radius: var(--r-2);
+}
+.adm-btn-danger:hover {
+  background: color-mix(in oklab, var(--err) 8%, transparent);
+}
+
+/* editor form */
+.adm-form {
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+  max-width: 980px;
+}
+.adm-grid2 {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 16px;
+}
+.adm-field {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.adm-field label {
+  font-family: var(--font-mono);
+  font-size: 11px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--ink-4);
+}
+.adm-field input,
+.adm-field select,
+.adm-field textarea {
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-2);
+  padding: 10px 12px;
+  font-size: 14px;
+  font-family: var(--font-sans);
+  color: var(--ink);
+  background: #fff;
+}
+.adm-field textarea {
+  resize: vertical;
+  line-height: 1.6;
+}
+.adm-field textarea.mono {
+  font-family: var(--font-mono);
+  font-size: 13px;
+}
+.adm-field input:focus,
+.adm-field select:focus,
+.adm-field textarea:focus {
+  outline: 0;
+  border-color: var(--ink);
+  box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.08);
+}
+.adm-field .hint {
+  font-family: var(--font-mono);
+  font-size: 10px;
+  color: var(--ink-4);
+  letter-spacing: 0.04em;
+}
+.adm-checkrow {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 14px;
+}
+.adm-checkrow input {
+  width: 16px;
+  height: 16px;
+}
+.adm-editor {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 14px;
+}
+.adm-preview {
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  background: #fff;
+  padding: 16px 20px;
+  overflow: auto;
+  max-height: 540px;
+  font-size: 15px;
+  line-height: 1.6;
+  color: var(--ink-2);
+}
+.adm-preview h2 {
+  font-size: 20px;
+  margin: 20px 0 8px;
+  color: var(--ink);
+}
+.adm-preview h3 {
+  font-size: 16px;
+  margin: 16px 0 6px;
+  color: var(--ink);
+}
+.adm-preview pre {
+  background: var(--ink);
+  color: #fff;
+  padding: 12px;
+  border-radius: var(--r-2);
+  overflow-x: auto;
+  font-size: 12px;
+}
+.adm-preview blockquote {
+  border-left: 3px solid var(--amber);
+  margin: 12px 0;
+  padding: 4px 14px;
+  color: var(--ink);
+}
+.adm-formfoot {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding-top: 18px;
+  border-top: 1px solid var(--line);
+  flex-wrap: wrap;
+}
+.adm-err {
+  color: var(--err);
+  font-family: var(--font-mono);
+  font-size: 12px;
+  letter-spacing: 0.03em;
+}
+.adm-ok {
+  color: var(--ok);
+  font-family: var(--font-mono);
+  font-size: 12px;
+}
+
+@media (max-width: 760px) {
+  .adm-grid2,
+  .adm-editor {
+    grid-template-columns: 1fr;
+  }
+}

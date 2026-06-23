@@ -1,0 +1,485 @@
+/* LeanWise AI v2 — Landing page styles
+   Animated telemetry hero · scroll-driven how-it-works · interactive picker */
+
+/* ────────────── HERO ────────────── */
+.lw-hero {
+  position: relative;
+  padding: clamp(56px, 7vw, 96px) 0 clamp(64px, 8vw, 112px);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.lw-hero::before {
+  /* subtle radial vignette */
+  content: ""; position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background:
+    radial-gradient(1200px 600px at 80% -10%, rgba(245,158,11,0.07), transparent 60%),
+    radial-gradient(1000px 500px at -10% 110%, rgba(15,45,74,0.07), transparent 60%);
+}
+.lw-hero .lw-container { position: relative; z-index: 1; }
+
+.lw-hero-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.1fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: center;
+}
+@media (max-width: 980px) {
+  /* minmax(0, …) lets the single column shrink below its children's min-content;
+     a bare 1fr (= minmax(auto,1fr)) would let the nowrap validation-panel header
+     blow the track wider than the viewport, clipping the hero text on phones. */
+  .lw-hero-grid { grid-template-columns: minmax(0, 1fr); gap: 48px; }
+}
+/* Keep the validation panel inside its grid area so it can't force overflow. */
+.lw-hero-grid > * { min-width: 0; }
+
+.lw-hero h1 { margin: 16px 0 24px; }
+.lw-hero h1 em { font-style: italic; font-weight: 500; color: var(--amber-2); }
+.lw-hero p.lw-lead { margin-bottom: 36px; font-size: clamp(15px, 1.25vw, 19px); color: var(--ink-2); }
+
+.lw-hero-ctas {
+  display: flex; align-items: center; gap: 12px; flex-wrap: wrap;
+}
+.lw-hero-ctas .lw-btn { padding: 14px 22px; font-size: 15px; }
+@media (max-width: 480px) {
+  .lw-hero-ctas { flex-direction: column; align-items: stretch; gap: 10px; }
+  .lw-hero-ctas .lw-btn { width: 100%; justify-content: center; }
+  .lw-hero h1 { margin: 12px 0 20px; }
+  .lw-hero p.lw-lead { margin-bottom: 28px; }
+}
+.lw-hero-meta {
+  margin-top: 32px;
+  display: flex; align-items: center; gap: 24px;
+  font-family: var(--font-mono); font-size: 11px;
+  color: var(--ink-3); letter-spacing: 0.08em;
+  flex-wrap: wrap;
+}
+.lw-hero-meta .avatars { display: inline-flex; }
+.lw-hero-meta .avatars i {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--paper-3);
+  border: 2px solid var(--paper);
+  margin-left: -6px;
+  display: inline-block;
+}
+.lw-hero-meta .avatars i:first-child { margin-left: 0; }
+.lw-hero-meta .avatars i:nth-child(1) { background: linear-gradient(135deg, #1A4D7E, #0F2D4A); }
+.lw-hero-meta .avatars i:nth-child(2) { background: linear-gradient(135deg, #F59E0B, #D97706); }
+.lw-hero-meta .avatars i:nth-child(3) { background: linear-gradient(135deg, #14B8A6, #0EA5A0); }
+.lw-hero-meta .avatars i:nth-child(4) { background: linear-gradient(135deg, #4A586B, #1F2D3D); }
+
+/* ────────────── HOW IT WORKS (scroll-driven) ────────────── */
+.lw-howit {
+  background: var(--paper-2);
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+}
+.lw-howit-grid {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) minmax(0, 1.2fr);
+  gap: clamp(32px, 4vw, 64px);
+  align-items: start;
+}
+.lw-howit-steps {
+  position: sticky; top: 96px;
+  display: flex; flex-direction: column; gap: 16px;
+  align-self: start;
+}
+.lw-howit-step {
+  border-left: 2px solid var(--line);
+  padding: 20px 0 20px 24px;
+  cursor: pointer;
+  transition: border-color .2s;
+}
+.lw-howit-step.active { border-left-color: var(--amber); }
+.lw-howit-step .n {
+  font-family: var(--font-mono); font-size: 11px;
+  letter-spacing: 0.16em; color: var(--ink-4);
+  margin-bottom: 8px;
+  display: block;
+}
+.lw-howit-step.active .n { color: var(--amber-2); }
+.lw-howit-step h3 {
+  font-size: 22px; font-weight: 600;
+  letter-spacing: -0.018em; line-height: 1.2;
+  margin: 0 0 8px;
+  color: var(--ink-4);
+  transition: color .2s;
+}
+.lw-howit-step.active h3 { color: var(--ink); }
+.lw-howit-step p {
+  font-size: 14px; color: var(--ink-3); margin: 0; line-height: 1.55;
+  max-width: 38ch;
+  max-height: 0; overflow: hidden;
+  transition: max-height .3s ease, opacity .2s, margin-top .2s;
+  opacity: 0;
+}
+.lw-howit-step.active p { max-height: 200px; opacity: 1; margin-top: 4px; }
+
+.lw-howit-stage {
+  position: sticky; top: 96px;
+  aspect-ratio: 16 / 11;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  background: #fff;
+  box-shadow: var(--sh-3);
+  overflow: hidden;
+  display: grid; grid-template-rows: auto 1fr;
+}
+.lw-howit-stage .lw-console-h { font-family: var(--font-mono); padding: 10px 14px; }
+.lw-howit-stage .stage-body {
+  position: relative;
+  background: var(--paper-2);
+  overflow: hidden;
+}
+.lw-howit-stage .stage-frame {
+  position: absolute; inset: 0;
+  display: grid; place-items: center;
+  padding: 24px;
+  opacity: 0; transition: opacity .35s ease;
+  pointer-events: none;
+}
+.lw-howit-stage .stage-frame.active { opacity: 1; }
+
+/* Stage frame visuals */
+.sf-upload {
+  width: 100%; max-width: 460px;
+  border: 2px dashed var(--line-2);
+  border-radius: var(--r-3);
+  padding: 32px;
+  background: #fff;
+  text-align: center;
+}
+.sf-upload .doc {
+  width: 64px; height: 80px; margin: 0 auto 16px;
+  background: var(--paper-2);
+  border: 1px solid var(--line-2);
+  border-radius: var(--r-3);
+  position: relative;
+}
+.sf-upload .doc::before {
+  content: ""; position: absolute; top: 0; right: 0;
+  width: 18px; height: 18px;
+  background: var(--paper-3);
+  border-left: 1px solid var(--line-2);
+  border-bottom: 1px solid var(--line-2);
+  border-radius: 0 4px 0 4px;
+}
+.sf-upload .doc::after {
+  content: ""; position: absolute; left: 12px; right: 12px; top: 28px;
+  height: 28px;
+  background:
+    repeating-linear-gradient(0deg, transparent 0 4px, var(--paper-3) 4px 5px);
+}
+.sf-upload .lbl {
+  font-family: var(--font-mono); font-size: 12px;
+  letter-spacing: 0.1em; color: var(--ink-2); text-transform: uppercase;
+}
+.sf-upload .sub { font-size: 13px; color: var(--ink-3); margin-top: 6px; }
+
+.sf-process {
+  width: 100%; max-width: 480px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 24px;
+}
+.sf-process .row {
+  display: grid; grid-template-columns: 24px 1fr auto;
+  gap: 12px; align-items: center;
+  padding: 12px 0; border-bottom: 1px solid var(--line);
+  font-size: 13px;
+}
+.sf-process .row:last-child { border-bottom: 0; }
+.sf-process .row .check {
+  width: 18px; height: 18px; border-radius: 50%;
+  background: var(--ok); color: #fff;
+  display: grid; place-items: center; font-size: 11px;
+}
+.sf-process .row.pending .check { background: var(--paper-3); color: var(--ink-4); animation: lwSpin 1.4s linear infinite; }
+@keyframes lwSpin { 0% { transform: rotate(0); } 100% { transform: rotate(360deg); } }
+.sf-process .row .name { color: var(--ink); font-weight: 500; }
+.sf-process .row .pct { font-family: var(--font-mono); font-size: 11px; color: var(--amber-2); letter-spacing: 0.06em; }
+.sf-process .row.pending .pct { color: var(--ink-4); }
+
+.sf-result {
+  width: 100%; max-width: 480px;
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-2);
+  padding: 24px;
+}
+.sf-result .top {
+  display: flex; justify-content: space-between; align-items: center;
+  padding-bottom: 16px; border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.sf-result .top .pass {
+  background: rgba(74,124,42,0.14); color: var(--ok);
+  font-family: var(--font-mono); font-size: 11px;
+  padding: 5px 10px; border-radius: 100px;
+  letter-spacing: 0.14em; text-transform: uppercase;
+}
+.sf-result .top .meta { font-family: var(--font-mono); font-size: 11px; color: var(--ink-4); letter-spacing: 0.08em; }
+.sf-result .grid {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: 12px;
+}
+.sf-result .item { font-size: 13px; }
+.sf-result .item .l { font-family: var(--font-mono); font-size: 10px; color: var(--ink-4); letter-spacing: 0.14em; text-transform: uppercase; margin-bottom: 4px; }
+.sf-result .item .v { font-weight: 600; }
+.sf-result .summary { margin-top: 16px; padding-top: 16px; border-top: 1px solid var(--line); font-size: 13px; color: var(--ink-2); }
+.sf-result .summary b { color: var(--ink); }
+
+@media (max-width: 980px) {
+  .lw-howit-grid { grid-template-columns: 1fr; }
+  .lw-howit-steps { position: static; }
+  .lw-howit-stage { position: static; aspect-ratio: 4/3; }
+}
+
+/* ────────────── RESULTS ────────────── */
+.lw-results-grid {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  box-shadow: var(--sh-2);
+}
+.lw-results-cell {
+  padding: 32px;
+  border-right: 1px solid var(--line);
+  position: relative;
+}
+.lw-results-cell:last-child { border-right: 0; }
+.lw-results-cell::after {
+  content: ""; position: absolute; left: 0; right: 0; bottom: 0;
+  height: 2px; background: var(--amber); width: 60%;
+}
+.lw-results-cell .lbl { font-family: var(--font-mono); font-size: 10px; letter-spacing: 0.16em; text-transform: uppercase; color: var(--ink-4); margin-bottom: 12px; }
+.lw-results-cell .num { font-size: clamp(40px, 4.5vw, 56px); font-weight: 600; letter-spacing: -0.035em; line-height: 1; font-feature-settings: "tnum"; }
+.lw-results-cell .num .a { color: var(--amber-2); }
+.lw-results-cell .num .unit { font-size: 22px; color: var(--ink-3); margin-left: 4px; }
+.lw-results-cell .desc { margin-top: 12px; font-size: 13px; color: var(--ink-3); }
+
+@media (max-width: 880px) { .lw-results-grid { grid-template-columns: 1fr 1fr; } .lw-results-cell:nth-child(2) { border-right: 0; } .lw-results-cell:nth-child(-n+2) { border-bottom: 1px solid var(--line); } }
+@media (max-width: 520px) { .lw-results-grid { grid-template-columns: 1fr; } .lw-results-cell { border-right: 0 !important; border-bottom: 1px solid var(--line); } .lw-results-cell:last-child { border-bottom: 0; } }
+
+/* ────────────── QUOTE ────────────── */
+.lw-quote {
+  background: var(--ink);
+  color: #fff;
+  border-radius: var(--r-3);
+  padding: clamp(40px, 5vw, 64px);
+  position: relative; overflow: hidden;
+}
+.lw-quote::before {
+  content: "“";
+  position: absolute; top: -20px; left: 24px;
+  font-size: 220px; line-height: 1;
+  color: rgba(255,184,0,0.22); font-family: Georgia, serif;
+}
+.lw-quote .text {
+  font-size: clamp(20px, 2.4vw, 32px);
+  line-height: 1.3; letter-spacing: -0.018em;
+  font-weight: 500; max-width: 30ch;
+  margin: 0 0 32px; position: relative; text-wrap: balance;
+}
+.lw-quote .who {
+  display: grid; grid-template-columns: auto 1fr auto;
+  gap: 16px; align-items: center;
+}
+.lw-quote .who .av {
+  width: 48px; height: 48px; border-radius: 50%;
+  background: linear-gradient(135deg, var(--amber), var(--amber-2));
+  border: 2px solid #fff;
+}
+.lw-quote .who .name { font-weight: 600; font-size: 15px; }
+.lw-quote .who .role { font-family: var(--font-mono); font-size: 11px; color: rgba(255,255,255,0.55); letter-spacing: 0.08em; margin-top: 2px; }
+.lw-quote .who .logo { height: 22px; opacity: 0.55; filter: brightness(0) invert(1); }
+
+/* ────────────── CTA ────────────── */
+.lw-cta {
+  position: relative;
+  background: linear-gradient(180deg, var(--paper-2), var(--paper));
+  border-top: 1px solid var(--line);
+  border-bottom: 1px solid var(--line);
+  overflow: hidden;
+}
+.lw-cta::before {
+  content: ""; position: absolute; inset: 0; pointer-events: none;
+  background: radial-gradient(800px 300px at 50% 100%, rgba(245,158,11,0.10), transparent 60%);
+}
+.lw-cta-inner {
+  position: relative;
+  display: grid; grid-template-columns: 1.4fr 1fr;
+  gap: 56px; align-items: end;
+}
+.lw-cta h2 { font-size: clamp(36px, 5vw, 64px); font-weight: 600; letter-spacing: -0.035em; line-height: 1; margin: 0; }
+.lw-cta h2 em { font-style: italic; font-weight: 500; color: var(--amber-2); }
+.lw-cta p { color: var(--ink-2); margin: 24px 0 0; max-width: 50ch; }
+.lw-cta-actions { display: flex; flex-direction: column; gap: 10px; }
+.lw-cta-actions .lw-btn { justify-content: space-between; padding: 16px 22px; font-size: 15px; }
+@media (max-width: 880px) {
+  .lw-cta-inner { grid-template-columns: 1fr; gap: 32px; align-items: start; }
+  .lw-cta-actions { width: 100%; }
+}
+
+/* ────────────── REVEAL ANIMATIONS ────────────── */
+/* Default visible — only hide when JS has marked the page as ready to animate.
+   This guarantees content shows even if the IntersectionObserver / useEffect
+   ordering races with React's first paint. */
+html.lw-reveal-ready .lw-reveal:not(.in) { opacity: 0; transform: translateY(16px); }
+.lw-reveal { transition: opacity .7s cubic-bezier(.2,.7,.2,1), transform .7s cubic-bezier(.2,.7,.2,1); }
+.lw-reveal.in { opacity: 1; transform: none; }
+.lw-reveal[data-d="1"] { transition-delay: .08s; }
+.lw-reveal[data-d="2"] { transition-delay: .16s; }
+.lw-reveal[data-d="3"] { transition-delay: .24s; }
+.lw-reveal[data-d="4"] { transition-delay: .32s; }
+
+/* ══════════════════ CONFORMANCE — compliance components ══════════════════
+   Confidence chips, validation stamps, spec-match rows and the Live Validation
+   Panel. All data here is mono + tabular-nums: the site reads as instrument
+   output, and the signal/pass/review/fail colors carry validation meaning. */
+
+/* ── Confidence chip ── a mono pill whose color ramps with the score.
+   States set via data-state="pass|signal|review|fail". */
+.lw-conf {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 3px 8px;
+  font-family: var(--font-mono); font-size: 11px; font-weight: 600;
+  letter-spacing: 0.04em; font-variant-numeric: tabular-nums;
+  border: 1px solid var(--line); border-radius: 100px;
+  background: #fff; color: var(--ink-2);
+  white-space: nowrap;
+}
+.lw-conf::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ink-4); }
+.lw-conf[data-state="pass"]   { color: var(--pass);   border-color: rgba(30,122,77,0.40);  background: var(--pass-soft); }
+.lw-conf[data-state="pass"]::before   { background: var(--pass); }
+.lw-conf[data-state="signal"] { color: var(--signal-2); border-color: rgba(14,155,186,0.40); background: var(--signal-soft); }
+.lw-conf[data-state="signal"]::before { background: var(--signal); }
+.lw-conf[data-state="review"] { color: var(--review); border-color: rgba(183,121,31,0.40); background: var(--review-soft); }
+.lw-conf[data-state="review"]::before { background: var(--review); }
+.lw-conf[data-state="fail"]   { color: var(--fail);   border-color: rgba(181,55,31,0.40);  background: var(--fail-soft); }
+.lw-conf[data-state="fail"]::before   { background: var(--fail); }
+
+/* ── Validation stamp ── a squared QC-inspection badge: PASS / REVIEW / FAIL. */
+.lw-stamp {
+  display: inline-flex; align-items: center; gap: 6px;
+  padding: 4px 9px;
+  font-family: var(--font-mono); font-size: 10px; font-weight: 700;
+  letter-spacing: 0.14em; text-transform: uppercase;
+  border: 1px solid currentColor; border-radius: var(--r-2);
+  line-height: 1;
+}
+.lw-stamp.pass   { color: var(--pass);   background: var(--pass-soft); }
+.lw-stamp.review { color: var(--review); background: var(--review-soft); }
+.lw-stamp.fail   { color: var(--fail);   background: var(--fail-soft); }
+
+/* ── Live Validation Panel ── the hero artifact. A document-validation console:
+   job header (file · spec · run), streamed field rows, summary footer. Replaces
+   the ops-telemetry console — no traffic lights, no scanline, no random walk. */
+.lw-validate {
+  background: #fff;
+  border: 1px solid var(--line);
+  border-radius: var(--r-3);
+  overflow: hidden;
+  box-shadow: var(--sh-3);
+  min-width: 0;
+}
+.lw-validate-h {
+  display: flex; align-items: center; justify-content: space-between;
+  flex-wrap: wrap; gap: 4px 12px;
+  padding: 11px 14px;
+  background: linear-gradient(180deg, #fff, var(--paper-2));
+  border-bottom: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 11px; letter-spacing: 0.04em;
+  color: var(--ink-3);
+}
+.lw-validate-h .file { display: inline-flex; align-items: center; gap: 8px; color: var(--ink-2); font-weight: 500; min-width: 0; }
+.lw-validate-h .file svg { flex: none; color: var(--ink-4); }
+.lw-validate-h .file .name { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.lw-validate-h .spec { color: var(--ink-4); white-space: nowrap; }
+.lw-validate-body { background: var(--paper-2); padding: 6px; display: flex; flex-direction: column; gap: 6px; }
+.lw-validate-row {
+  display: grid; grid-template-columns: 1fr auto auto;
+  align-items: center; gap: 12px;
+  padding: 11px 12px;
+  background: #fff; border: 1px solid var(--line); border-radius: var(--r-2);
+  opacity: 0;
+  animation: lwValIn .45s ease forwards;
+}
+/* Staggered reveal — the rows are a fixed set, so the delays live in CSS
+   rather than per-row inline styles. */
+.lw-validate-row:nth-child(1) { animation-delay: .12s; }
+.lw-validate-row:nth-child(2) { animation-delay: .26s; }
+.lw-validate-row:nth-child(3) { animation-delay: .40s; }
+.lw-validate-row:nth-child(4) { animation-delay: .54s; }
+.lw-validate-row:nth-child(5) { animation-delay: .68s; }
+.lw-validate-row .field { font-size: 13px; color: var(--ink-2); font-weight: 500; min-width: 0; }
+.lw-validate-row .field .src {
+  display: block; font-family: var(--font-mono); font-size: 10.5px;
+  color: var(--ink-4); letter-spacing: 0.02em; font-variant-numeric: tabular-nums;
+  margin-top: 2px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+@keyframes lwValIn { from { opacity: 0; transform: translateY(6px); } to { opacity: 1; transform: none; } }
+@media (prefers-reduced-motion: reduce) { .lw-validate-row { opacity: 1; animation: none; } }
+.lw-validate-foot {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  padding: 9px 14px;
+  background: var(--paper-2); border-top: 1px solid var(--line);
+  font-family: var(--font-mono); font-size: 10.5px; letter-spacing: 0.04em;
+  color: var(--ink-4); font-variant-numeric: tabular-nums;
+}
+.lw-validate-foot .summary { display: inline-flex; align-items: center; gap: 10px; flex-wrap: wrap; }
+.lw-validate-foot .summary b { color: var(--ink-2); font-weight: 600; }
+.lw-validate-foot .summary .ok { color: var(--pass); }
+.lw-validate-foot .summary .rv { color: var(--review); }
+.lw-validate-foot .summary .fl { color: var(--fail); }
+.lw-validate-foot .mean { color: var(--ink-3); }
+@media (max-width: 480px) { .lw-validate-row { grid-template-columns: 1fr auto; } .lw-validate-row .lw-stamp { display: none; } }
+
+/* Document-types grid (product page). */
+.lw-doctypes {
+  display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px;
+  margin-top: 40px;
+}
+.lw-doctype { padding: 24px; }
+.lw-doctype .code {
+  display: inline-block; margin-bottom: 14px;
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em;
+  color: var(--signal-2); padding: 4px 8px;
+  background: var(--signal-soft); border-radius: var(--r-2);
+}
+.lw-doctype h3 { margin-bottom: 8px; }
+.lw-doctype p { color: var(--ink-3); font-size: 14px; line-height: 1.55; margin: 0; }
+@media (max-width: 860px) { .lw-doctypes { grid-template-columns: 1fr 1fr; } }
+@media (max-width: 560px) { .lw-doctypes { grid-template-columns: 1fr; } }
+
+/* Roadmap cards (product page · subordinate modules). */
+.lw-roadmap-grid {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 16px;
+  margin-top: 40px;
+}
+.lw-roadmap-card { padding: 28px; }
+.lw-roadmap-card-h {
+  display: flex; align-items: center; justify-content: space-between; gap: 12px;
+  margin-bottom: 16px;
+}
+.lw-roadmap-card-h .code {
+  font-size: 12px; font-weight: 600; letter-spacing: 0.1em; color: var(--ink-4);
+}
+.lw-roadmap-card h3 { margin-bottom: 10px; }
+.lw-roadmap-card p { color: var(--ink-3); font-size: 14.5px; line-height: 1.6; margin: 0; }
+@media (max-width: 640px) { .lw-roadmap-grid { grid-template-columns: 1fr; } }
+
+/* Roadmap teaser — a quiet, subordinate note pointing forward. */
+.lw-roadmap-teaser {
+  border: 1px solid var(--line);
+  border-left: 3px solid var(--signal);
+  border-radius: var(--r-3);
+  background: #fff;
+  padding: clamp(20px, 3vw, 32px);
+}
+.lw-roadmap-teaser .lw-lead strong { color: var(--ink); font-weight: 600; }
+.lw-roadmap-teaser .lw-btn-link { margin-left: 4px; }

@@ -19,14 +19,19 @@ pnpm lint
 # Build (vite build → dist/{client,server})
 pnpm build
 
-# Deploy (build + wrangler deploy)
-pnpm deploy
+# Deploy (build + wrangler deploy) — use `run`; bare `pnpm deploy` hits a pnpm builtin
+pnpm run deploy
 
 # Generate Cloudflare env types
 pnpm cf-typegen
 
 # Local Worker dev (after build)
 pnpm wrangler:dev
+
+# D1 — create the (empty) schema on the LOCAL dev database
+pnpm db:setup
+# Same against production D1 (db/schema.sql is a destructive reset — drops + recreates)
+pnpm wrangler d1 execute leanwise-ai --remote --file=db/schema.sql
 
 # Tests
 pnpm test                  # unit + e2e against vite dev
@@ -36,7 +41,7 @@ pnpm test:e2e:remote       # e2e against the deployed worker
 pnpm test:e2e:headed       # e2e with visible browser
 
 # Run a single test file
-npx vitest run tests/unit/i18n.test.ts
+npx vitest run tests/unit/validators.test.ts
 npx playwright test tests/e2e/contact.spec.ts --project=chromium
 
 # Run a single test
@@ -53,29 +58,39 @@ If a request hits a static path (`/assets/*`, `/robots.txt`, `/sitemap.xml`), th
 
 ### Routing
 
-File-based via TanStack Router. Filenames map to URLs using **dot syntax for nesting**, not directories — `solutions.connect-mastery.tsx` → `/solutions/connect-mastery`. The `routeTree.gen.ts` file is generated on every dev/build and gitignored. The router is exposed via `getRouter()` in `src/router.tsx` (renamed from `createRouter` — TanStack Start's plugin imports `getRouter` by name from `#tanstack-router-entry`, so do not rename it).
+File-based via TanStack Router. Filenames map to URLs using **dot syntax for nesting**, not directories — `case-studies.talimex.tsx` → `/case-studies/talimex`. The `routeTree.gen.ts` file is generated on every dev/build and gitignored. The router is exposed via `getRouter()` in `src/router.tsx` (renamed from `createRouter` — TanStack Start's plugin imports `getRouter` by name from `#tanstack-router-entry`, so do not rename it).
 
-`__root.tsx` uses both `component: RootLayout` (renders Nav + `<Outlet />` + Footer) **and** `shellComponent: RootDocument` (renders `<html>` shell with `<HeadContent />` + `<Scripts />`). Don't render `<Outlet />` inside the shell — it double-mounts the route tree.
+`__root.tsx` uses both `component: RootLayout` (renders StatusBar + Nav + `<Outlet />` + Footer) **and** `shellComponent: RootDocument` (renders `<html>` shell with `<HeadContent />` + `<Scripts />`). Don't render `<Outlet />` inside the shell — it double-mounts the route tree.
 
 ### Server functions
 
-`src/server/forms.ts` defines five form endpoints via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). All emails route through `sendEmail()`, which reads `RESEND_API_KEY` / `RESEND_FROM` / `RESEND_TO` from `process.env` — works in both Node dev and Cloudflare Workers (the cf vite plugin polyfills `process.env` from wrangler `vars` + secrets). If those vars are missing it logs and returns `ok` instead of failing — that's the dev fallback so e2e tests can validate the success-state UI without sending real emails.
+`src/server/forms.ts` defines the form endpoint `submitDemo` — via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). (A second `joinWaitlist` endpoint and its `WaitlistForm` were removed with the SOP/Operations waitlist pages in the compliance-led redesign.) All emails route through `sendEmail()`, which uses **Cloudflare Email Sending** via the `send_email` binding (`MAIL` in `wrangler.jsonc`) — it calls `env.MAIL.send({ from, to, subject, text })` with the structured builder API (no MIME, no API keys). `MAIL_FROM`/`MAIL_TO` are plain `vars`. Under `vite dev` (`import.meta.env.DEV`) the send is skipped and logged — the dev fallback so e2e tests can validate the success-state UI without sending real mail; real delivery happens on the deployed Worker. Email Sending prerequisites are in the Deployment notes below.
 
-### i18n
+### Styling
 
-EN/VI string tables in `src/i18n/strings.ts`. The `useI18n()` hook in `src/i18n/index.ts` always initializes to `'en'` on both server and client to avoid hydration mismatch, then reads `localStorage('lw.lang')` in a `useEffect` on mount and dispatches a `lw:langchange` window event on change so all consumers re-render. Adding strings: add to **both** `STRINGS.en` and `STRINGS.vi` — the unit test `tests/unit/i18n.test.ts` enforces parity.
+The industrial design system is self-contained in `src/styles/` (originally ported from a Claude Design handoff bundle — not in this repo; `src/styles/` is now the source of truth). Tokens live in `src/styles/tokens.css` — a single "Conformance" palette (blueprint lineage: cool inspection-paper, deep navy ink, instrument-cyan `--amber`/signal slot) on `:root`. The 7 alternate `data-palette` themes (and the `data-palette` attribute itself) were dropped in the redesign. Component styles split across `chrome/site/pages/resources/optimizations/admin.css`, all imported once in `__root.tsx`; class names are `.lw-*`.
 
-### Static data → CMS migration path
+Sections wrapped in `.lw-reveal` are hidden via CSS until the `useReveal` hook (`src/components/reveal.ts`) adds `lw-reveal-ready` to `<html>` after hydration. SSR output stays visible by default, so never rely on a `.lw-reveal` element being painted before hydration.
 
-`src/data/blog-posts.ts` and `src/data/resources.ts` are typed in-memory fixtures. They are intended to be replaced by a headless CMS (Sanity/Payload) without touching component code; keep the exported types stable.
+The site is English-only. Blog posts and customer-story content live in Cloudflare D1, not inline — see Content store & admin below. `blog.$slug.tsx` is the live blog-post page (D1 loader). The compliance-led IA is a 5-page core — `/`, `/product`, `/company`, `/pricing`, `/customers` (plus `/contact`, `/resources`). Several routes are 301-redirect-only stubs kept so legacy/inbound URLs resolve: `solutions.connect-mastery.tsx` → `/product`, `solutions.sop-mastery.tsx` & `solutions.operations-mastery.tsx` → `/product#roadmap`, `about.tsx` → `/company`, `blog.index.tsx` → `/resources`, `get-a-demo.tsx` → `/contact`. The old `/solutions/*` module pages folded into `/product` (CONNECT) and its `#roadmap` section (SOP/Operations).
+
+### Content store & admin
+
+Blog posts and customer stories live in **Cloudflare D1** (`leanwise-ai` database, `DB` binding). Schema: `db/schema.sql` (the single source of truth — `DROP`s + recreates both tables, no seed data; the DB starts empty and is populated through the `/admin` console). `src/server/db.ts` is the D1 query layer — server-only, reaches bindings via `import { env } from 'cloudflare:workers'`, so never import it from client component scope. `src/server/content.ts` wraps it as `createServerFn` RPCs: public reads (`listPublishedPosts`, `getPublishedPost`, `listStories`) and admin-gated writes. Public routes (`/resources`, `/blog/$slug`, `/customers`) read via route `loader`s; post bodies are Markdown rendered with `marked` (`src/lib/markdown.ts`).
+
+The `/admin/*` console (dashboard + post/story editors) is gated by **Cloudflare Access**. `src/server/auth.ts` verifies the `Cf-Access-Jwt-Assertion` JWT (via `jose`) against the team JWKS; every write server function calls `requireAdmin()`. Local dev has no Access proxy, so `auth.ts` grants a dev identity under `import.meta.env.DEV` — a production build with `CF_ACCESS_TEAM_DOMAIN` / `CF_ACCESS_AUD` unset **fails closed**. `RootLayout` renders no marketing chrome under `/admin`.
+
+Gotcha: a TanStack route with a `loader` must not use `head: (ctx) => …` with the inferred `ctx` type — it forms a circular generic that silently drops loader-data typing (`useLoaderData()` becomes `undefined`). Hand-type the `head` ctx param instead (see `blog.$slug.tsx`).
 
 ### Forms — accessibility contract
 
-Every form input uses `useId()` + `htmlFor`/`id` linkage. This is load-bearing: Playwright's `getByLabel` requires it, so adding a form field without it will silently break e2e tests. The `NewsletterBox` form has `noValidate` to defer email validation to the JS code (otherwise the browser's native popup blocks the test for invalid input).
+Every form input uses `useId()` + `htmlFor`/`id` linkage. This is load-bearing: Playwright's `getByLabel` requires it, so adding a form field without it will silently break e2e tests. The `ContactForm` in `src/components/forms.tsx` uses `noValidate` to defer email validation to the JS code (otherwise the browser's native popup blocks the test for invalid input).
+
+e2e tests that click JS-driven controls (tabs, form submits, the mobile-menu button) must first `await hydrated(page)` from `tests/e2e/_helpers.ts` — clicking before React hydrates does a native no-op submit/navigation and fails intermittently against the dev server.
 
 ## Reference directories (siblings, not in this repo)
 
-- `../LeanwiseAI/` — original Claude Design output (HTML + Babel-in-browser JSX). Source of truth for design and copy. Don't edit.
+- `../LeanwiseAI/` — original (v1) Claude Design output. Superseded by the v2 industrial redesign now in `src/`; useful only as historical copy reference. Don't edit.
 - `../leanwiseai_website/` — old WordPress theme. Discarded; only the logo and copy were carried over.
 - `../claude_design_input/leanwiseai_design_brief.md` — the brief that produced the design. Useful when adding new pages.
 
@@ -84,4 +99,7 @@ Every form input uses `useId()` + `htmlFor`/`id` linkage. This is load-bearing: 
 - Cloudflare account: `nthanhtrung198@gmail.com` (`859506ec8de58eeaeca3f6c4283b422a`).
 - Wrangler is OAuth-authed locally; `wrangler whoami` confirms.
 - To switch from the `*.workers.dev` subdomain to `leanwise.ai`, add a custom domain to the Worker in the Cloudflare dashboard — no code changes needed.
-- Bindings (D1, KV, send_email) are stubbed in `wrangler.jsonc` comments — uncomment + provision when the blog/email features grow beyond the current static + Resend setup.
+- **D1 + KV** are provisioned and bound in `wrangler.jsonc` (`DB`, `CACHE`).
+- **Form email** — `wrangler.jsonc` binds Cloudflare **Email Sending** (`send_email` binding `MAIL`). Prerequisites: (1) the Workers **paid plan** — Email Sending is a paid feature — and (2) the `MAIL_FROM` domain onboarded to Email Sending (dashboard → Compute → Email Service → Email Sending → Onboard Domain, which adds SPF/DKIM DNS records; the domain must use Cloudflare DNS). Email Sending delivers to any recipient — no destination verification. `MAIL_TO` is currently a personal inbox for testing — switch it to `support@leanwise.ai` for production. Until the prerequisites are met, `env.MAIL.send()` rejects.
+- **First-time D1 setup on production** (run once): `wrangler d1 execute leanwise-ai --remote --file=db/schema.sql`. Without this the deployed content pages have no tables to read. Note this drops + recreates the tables — don't re-run it once the production DB holds real content.
+- **Admin auth** — in the Zero Trust dashboard, add a self-hosted Cloudflare Access application covering the `/admin` path, then set `CF_ACCESS_TEAM_DOMAIN` and `CF_ACCESS_AUD` in `wrangler.jsonc` `vars` and redeploy. Until those vars are set, `/admin` is locked in production.

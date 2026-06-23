@@ -10,6 +10,7 @@
     "wrangler:dev": "wrangler dev",
     "deploy": "vite build && wrangler deploy",
     "cf-typegen": "wrangler types --env-interface CloudflareEnv",
+    "db:setup": "wrangler d1 execute leanwise-ai --local --file=db/schema.sql",
     "lint": "tsc --noEmit",
     "test": "vitest run && playwright test",
     "test:unit": "vitest run",
@@ -21,12 +22,13 @@
   "dependencies": {
     "@tanstack/react-router": "^1.131.0",
     "@tanstack/react-start": "^1.131.0",
+    "jose": "^6.2.3",
+    "marked": "^18.0.4",
     "react": "^19.0.0",
     "react-dom": "^19.0.0"
   },
   "devDependencies": {
     "@cloudflare/vite-plugin": "^1.13.0",
-    "@cloudflare/workers-types": "^4.20260401.0",
     "@playwright/test": "^1.50.0",
     "@types/node": "^25.6.0",
     "@types/react": "^19.0.0",

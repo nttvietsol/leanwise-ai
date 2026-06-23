@@ -1,49 +1,46 @@
 import { test, expect } from '@playwright/test';
+import { hydrated, skipUnlessSeeded } from './_helpers';
+
+const UNSEEDED =
+  'Resources posts not seeded in D1 (drafts pending — see content/drafts/)';
 
 test.describe('Resources page', () => {
-  test('renders hero, filters, and at least one card', async ({ page }) => {
+  test('renders hero, featured post, and tabs', async ({ page }) => {
     await page.goto('/resources');
-
-    await expect(page.getByText('Resources').first()).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Free playbooks, templates,/ })).toBeVisible();
-
-    await expect(page.getByRole('heading', { name: 'The CONNECT Compliance Playbook' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'TSS Mismatch Decision Tree' })).toBeVisible();
+    // Hero copy and the filter tabs are static — always present.
+    await expect(
+      page.getByRole('heading', { name: /Lean methodology/, level: 1 }),
+    ).toBeVisible();
+    for (const t of ['All articles', 'Essays', 'Customer cases']) {
+      await expect(page.getByRole('button', { name: new RegExp(t) })).toBeVisible();
+    }
+    // The featured card comes from D1 — only present once a post is seeded.
+    const featured = page.getByRole('heading', { name: /The auditor doesn't care/ });
+    await skipUnlessSeeded(featured, UNSEEDED);
+    await expect(featured).toBeVisible();
   });
 
-  test('filters by category', async ({ page }) => {
+  test('filters posts by category', async ({ page }) => {
     await page.goto('/resources');
-    await page.getByRole('button', { name: 'Lean' }).first().click();
-
-    await expect(page.getByRole('heading', { name: 'SOP Visual Builder Starter' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'The CONNECT Compliance Playbook' })).not.toBeVisible();
+    await hydrated(page);
+    await page.getByRole('button', { name: /Customer cases/ }).click();
+    await skipUnlessSeeded(
+      page.getByRole('heading', { name: /How Talimex eliminated 11 of 12/ }),
+      UNSEEDED,
+    );
+    await expect(
+      page.getByRole('heading', { name: /How Talimex eliminated 11 of 12/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /Andon on a 200-person line/ }),
+    ).not.toBeVisible();
   });
 
-  test('opens gate modal and submits with valid email', async ({ page }) => {
+  test('featured post links to the article', async ({ page }) => {
     await page.goto('/resources');
-
-    // The first gated resource is the Playbook.
-    await page
-      .locator('article', { hasText: 'The CONNECT Compliance Playbook' })
-      .getByRole('button', { name: /Download/ })
-      .click();
-
-    // Modal opens — scope to the dialog, not the card on the page
-    const modal = page.locator('.gate-modal');
-    await expect(modal).toBeVisible();
-    await expect(modal.getByText(/Tell us where to send it/)).toBeVisible();
-
-    // Invalid email
-    await page.getByLabel(/Work email/).fill('bad');
-    await page.getByRole('button', { name: /Send me the/ }).click();
-    await expect(page.getByText(/Please enter a valid work email/)).toBeVisible();
-
-    // Valid email → success state
-    await page.getByLabel(/Work email/).fill('me@factory.vn');
-    await page.getByLabel(/Full name/).fill('Test Lead');
-    await page.getByRole('button', { name: /Send me the/ }).click();
-
-    await expect(page.getByRole('heading', { name: /Check your inbox/ })).toBeVisible();
-    await expect(page.getByText('me@factory.vn')).toBeVisible();
+    const featured = page.getByRole('heading', { name: /The auditor doesn't care/ });
+    await skipUnlessSeeded(featured, UNSEEDED);
+    await featured.click();
+    await expect(page).toHaveURL('/blog/the-auditor-doesnt-care');
   });
 });

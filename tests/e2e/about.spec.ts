@@ -1,31 +1,51 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('About page', () => {
-  test('renders origin story, vision, values, and founding team', async ({ page }) => {
-    await page.goto('/about');
+test.describe('Company page', () => {
+  test('renders hero, principles, and founding team', async ({ page }) => {
+    await page.goto('/company');
 
-    // Origin
-    await expect(page.getByRole('heading', { name: /10\+ Years/ })).toBeVisible();
     await expect(
-      page.getByText(/working directly with IKEA suppliers/),
+      page.getByRole('heading', { name: /same factories/, level: 1 }),
     ).toBeVisible();
 
-    // Vision
-    await expect(page.getByText('Our vision')).toBeVisible();
-    await expect(page.getByText(/1,000\+ smart factories/)).toBeVisible();
+    // Principles
+    await expect(
+      page.getByRole('heading', { name: /Earn the operator/ }),
+    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Lean before AI' })).toBeVisible();
 
-    // Values — exact 4
-    for (const v of ['Integrity', 'Continuous Improvement', 'Responsibility', 'Collaboration']) {
-      await expect(page.getByRole('heading', { name: v })).toBeVisible();
+    // Team
+    await expect(page.getByText('Nguyen Tien Dat')).toBeVisible();
+    await expect(page.getByText('CTO · COFOUNDER')).toBeVisible();
+  });
+
+  test('legacy /about URL redirects to /company', async ({ page }) => {
+    await page.goto('/about');
+    await expect(page).toHaveURL('/company');
+  });
+});
+
+test.describe('Pricing page', () => {
+  test('renders three plans and comparison table', async ({ page }) => {
+    await page.goto('/pricing');
+    await expect(
+      page.getByRole('heading', { name: /Priced per plant/, level: 1 }),
+    ).toBeVisible();
+    for (const plan of ['Starter', 'Plant', 'Portfolio']) {
+      await expect(page.getByRole('heading', { name: plan, exact: true })).toBeVisible();
     }
+    await expect(page.getByText('MOST PICKED')).toBeVisible();
+  });
+});
 
-    // Founders
-    await expect(page.getByRole('heading', { name: 'Truong Xuan Truong' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Nguyen Thanh Trung' })).toBeVisible();
-    await expect(page.getByText('Founder & CEO')).toBeVisible();
-    await expect(page.getByText('Co-Founder & CTO')).toBeVisible();
-
-    // €1.2M+ proof point
-    await expect(page.getByText(/€1\.2M\+/)).toBeVisible();
+test.describe('Customers page', () => {
+  test('renders customer stories and links to the case study', async ({ page }) => {
+    await page.goto('/customers');
+    await expect(
+      page.getByRole('heading', { name: /customers/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByRole('heading', { name: 'Talimex' })).toBeVisible();
+    await page.getByRole('heading', { name: 'Talimex' }).click();
+    await expect(page).toHaveURL('/case-studies/talimex');
   });
 });

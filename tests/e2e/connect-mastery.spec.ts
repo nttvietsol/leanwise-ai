@@ -1,35 +1,51 @@
 import { test, expect } from '@playwright/test';
+import { hydrated } from './_helpers';
 
-test.describe('CONNECT Mastery product page', () => {
-  test('renders hero, 3 features, results, steps, testimonials', async ({ page }) => {
+test.describe('Product page', () => {
+  test('renders hero, anatomy, document types, capabilities, results', async ({
+    page,
+  }) => {
+    await page.goto('/product');
+
+    await expect(page).toHaveTitle(/IKEA CONNECT compliance/);
+    await expect(
+      page.getByRole('heading', { name: /CONNECT audits/, level: 1 }),
+    ).toBeVisible();
+    await expect(page.getByText('Compliance validation · LIVE · Q1 2026')).toBeVisible();
+
+    // Anatomy stages
+    await expect(page.getByRole('heading', { name: 'Ingest' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Report', exact: true }),
+    ).toBeVisible();
+
+    // Document types
+    await expect(
+      page.getByRole('heading', { name: 'Declaration of Substances' }),
+    ).toBeVisible();
+
+    // Capabilities ledger
+    await expect(page.getByText('Semantic requirement matching')).toBeVisible();
+
+    // Results strip
+    await expect(page.getByText('FASTER AUDIT CYCLE')).toBeVisible();
+
+    // Roadmap (folded SOP + Operations)
+    await expect(page.getByRole('heading', { name: 'SOP Mastery' })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: 'Operations Mastery' }),
+    ).toBeVisible();
+  });
+
+  test('legacy module URLs redirect to the product page', async ({ page }) => {
     await page.goto('/solutions/connect-mastery');
+    await expect(page).toHaveURL('/product');
+  });
 
-    // Hero
-    await expect(page.getByRole('heading', { name: 'CONNECT Mastery', exact: true })).toBeVisible();
-    await expect(page.getByText('Eliminate Compliance Waste')).toBeVisible();
-    await expect(page.getByText(/Available now/i).first()).toBeVisible();
-
-    // Three feature blocks
-    await expect(page.getByRole('heading', { name: /Catch the Errors That Actually Fail Audits/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Every Requirement in Your TSS/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /One Click\. Walk Away\. Results Waiting/ })).toBeVisible();
-
-    // Results stats
-    await expect(page.getByText('75%').first()).toBeVisible();
-    await expect(page.getByText('99%').first()).toBeVisible();
-
-    // Steps
-    await expect(page.getByRole('heading', { name: /Up and Running in 2 Weeks/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Book Demo' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: '1 Week Setup' })).toBeVisible();
-    await expect(page.getByRole('heading', { name: 'Start Saving Time' })).toBeVisible();
-
-    // Testimonials
-    await expect(page.getByText(/full afternoon now takes under an hour/)).toBeVisible();
-
-    // Final CTA + trust badges
-    await expect(page.getByRole('heading', { name: /Ready to Master CONNECT/ })).toBeVisible();
-    await expect(page.getByText(/No credit card needed/)).toBeVisible();
-    await expect(page.getByText(/2 weeks to full deployment/)).toBeVisible();
+  test('CTA links to contact', async ({ page }) => {
+    await page.goto('/product');
+    await hydrated(page);
+    await page.getByRole('link', { name: /Book a demo/ }).first().click();
+    await expect(page).toHaveURL('/contact');
   });
 });
