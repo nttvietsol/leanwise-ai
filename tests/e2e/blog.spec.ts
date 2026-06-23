@@ -1,10 +1,19 @@
 import { test, expect } from '@playwright/test';
+import { skipUnlessSeeded } from './_helpers';
+
+const UNSEEDED =
+  "Post 'the-auditor-doesnt-care' not seeded in D1 (draft pending — see content/drafts/)";
 
 test.describe('Blog article', () => {
   test('renders the long-form essay with author and related posts', async ({
     page,
   }) => {
     await page.goto('/blog/the-auditor-doesnt-care');
+    // D1-backed: on an unseeded store the route renders its 404 state instead.
+    await skipUnlessSeeded(
+      page.getByRole('heading', { name: /auditor doesn't care/, level: 1 }),
+      UNSEEDED,
+    );
 
     await expect(page).toHaveTitle(/auditor doesn't care/);
     await expect(

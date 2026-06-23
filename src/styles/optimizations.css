@@ -176,8 +176,11 @@
   .lw-scale-foot { grid-template-columns: 1fr; gap: 16px; }
   .lw-scale-foot > div { border-left: 0; padding: 0 0 16px; border-bottom: 1px solid var(--line); }
   .lw-scale-foot > div:last-child { border-bottom: 0; padding-bottom: 0; }
-  /* Anchor the end cards to the track edges instead of centering them — a
-     centered card on the first/last tick spills past the viewport on phones. */
+  /* Anchor the end cards to the track edges instead of centering them, so a
+     centered card on an extreme tick can't clip the section edge. Below 640px
+     only the big (last) card stays visible (see next block), so its right-edge
+     anchor is what prevents horizontal overflow on phones; the first-card anchor
+     matters in the 641–980px band, where all four cards show. */
   .lw-scale .tick:first-child .card { left: 0; transform: none; }
   .lw-scale .tick:last-child .card { left: auto; right: 0; transform: none; }
 }
