@@ -58,21 +58,21 @@ If a request hits a static path (`/assets/*`, `/robots.txt`, `/sitemap.xml`), th
 
 ### Routing
 
-File-based via TanStack Router. Filenames map to URLs using **dot syntax for nesting**, not directories — `solutions.connect-mastery.tsx` → `/solutions/connect-mastery`. The `routeTree.gen.ts` file is generated on every dev/build and gitignored. The router is exposed via `getRouter()` in `src/router.tsx` (renamed from `createRouter` — TanStack Start's plugin imports `getRouter` by name from `#tanstack-router-entry`, so do not rename it).
+File-based via TanStack Router. Filenames map to URLs using **dot syntax for nesting**, not directories — `case-studies.talimex.tsx` → `/case-studies/talimex`. The `routeTree.gen.ts` file is generated on every dev/build and gitignored. The router is exposed via `getRouter()` in `src/router.tsx` (renamed from `createRouter` — TanStack Start's plugin imports `getRouter` by name from `#tanstack-router-entry`, so do not rename it).
 
 `__root.tsx` uses both `component: RootLayout` (renders StatusBar + Nav + `<Outlet />` + Footer) **and** `shellComponent: RootDocument` (renders `<html>` shell with `<HeadContent />` + `<Scripts />`). Don't render `<Outlet />` inside the shell — it double-mounts the route tree.
 
 ### Server functions
 
-`src/server/forms.ts` defines two form endpoints — `submitDemo` and `joinWaitlist` — via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). All emails route through `sendEmail()`, which uses **Cloudflare Email Sending** via the `send_email` binding (`MAIL` in `wrangler.jsonc`) — it calls `env.MAIL.send({ from, to, subject, text })` with the structured builder API (no MIME, no API keys). `MAIL_FROM`/`MAIL_TO` are plain `vars`. Under `vite dev` (`import.meta.env.DEV`) the send is skipped and logged — the dev fallback so e2e tests can validate the success-state UI without sending real mail; real delivery happens on the deployed Worker. Email Sending prerequisites are in the Deployment notes below.
+`src/server/forms.ts` defines the form endpoint `submitDemo` — via `createServerFn({ method: 'POST' }).inputValidator(...).handler(...)`. The current API is `inputValidator` (not `validator`). (A second `joinWaitlist` endpoint and its `WaitlistForm` were removed with the SOP/Operations waitlist pages in the compliance-led redesign.) All emails route through `sendEmail()`, which uses **Cloudflare Email Sending** via the `send_email` binding (`MAIL` in `wrangler.jsonc`) — it calls `env.MAIL.send({ from, to, subject, text })` with the structured builder API (no MIME, no API keys). `MAIL_FROM`/`MAIL_TO` are plain `vars`. Under `vite dev` (`import.meta.env.DEV`) the send is skipped and logged — the dev fallback so e2e tests can validate the success-state UI without sending real mail; real delivery happens on the deployed Worker. Email Sending prerequisites are in the Deployment notes below.
 
 ### Styling
 
-The industrial design system is self-contained in `src/styles/` (originally ported from a Claude Design handoff bundle — not in this repo; `src/styles/` is now the source of truth). Tokens live in `src/styles/tokens.css` — 8 `data-palette` themes on `<html>`, with `blueprint` set as the default in `__root.tsx`. Component styles split across `chrome/site/pages/resources/optimizations.css`, all imported once in `__root.tsx`; class names are `.lw-*`.
+The industrial design system is self-contained in `src/styles/` (originally ported from a Claude Design handoff bundle — not in this repo; `src/styles/` is now the source of truth). Tokens live in `src/styles/tokens.css` — a single "Conformance" palette (blueprint lineage: cool inspection-paper, deep navy ink, instrument-cyan `--amber`/signal slot) on `:root`. The 7 alternate `data-palette` themes (and the `data-palette` attribute itself) were dropped in the redesign. Component styles split across `chrome/site/pages/resources/optimizations/admin.css`, all imported once in `__root.tsx`; class names are `.lw-*`.
 
 Sections wrapped in `.lw-reveal` are hidden via CSS until the `useReveal` hook (`src/components/reveal.ts`) adds `lw-reveal-ready` to `<html>` after hydration. SSR output stays visible by default, so never rely on a `.lw-reveal` element being painted before hydration.
 
-The site is English-only. Blog posts and customer-story content live in Cloudflare D1, not inline — see Content store & admin below. `blog.$slug.tsx` is the live blog-post page (D1 loader); `blog.index.tsx` (→ `/resources`) and `get-a-demo.tsx` (→ `/contact`) are 301-redirect-only routes kept so legacy URLs resolve.
+The site is English-only. Blog posts and customer-story content live in Cloudflare D1, not inline — see Content store & admin below. `blog.$slug.tsx` is the live blog-post page (D1 loader). The compliance-led IA is a 5-page core — `/`, `/product`, `/company`, `/pricing`, `/customers` (plus `/contact`, `/resources`). Several routes are 301-redirect-only stubs kept so legacy/inbound URLs resolve: `solutions.connect-mastery.tsx` → `/product`, `solutions.sop-mastery.tsx` & `solutions.operations-mastery.tsx` → `/product#roadmap`, `about.tsx` → `/company`, `blog.index.tsx` → `/resources`, `get-a-demo.tsx` → `/contact`. The old `/solutions/*` module pages folded into `/product` (CONNECT) and its `#roadmap` section (SOP/Operations).
 
 ### Content store & admin
 
@@ -84,7 +84,7 @@ Gotcha: a TanStack route with a `loader` must not use `head: (ctx) => …` with 
 
 ### Forms — accessibility contract
 
-Every form input uses `useId()` + `htmlFor`/`id` linkage. This is load-bearing: Playwright's `getByLabel` requires it, so adding a form field without it will silently break e2e tests. The `WaitlistForm` and `ContactForm` in `src/components/forms.tsx` use `noValidate` to defer email validation to the JS code (otherwise the browser's native popup blocks the test for invalid input).
+Every form input uses `useId()` + `htmlFor`/`id` linkage. This is load-bearing: Playwright's `getByLabel` requires it, so adding a form field without it will silently break e2e tests. The `ContactForm` in `src/components/forms.tsx` uses `noValidate` to defer email validation to the JS code (otherwise the browser's native popup blocks the test for invalid input).
 
 e2e tests that click JS-driven controls (tabs, form submits, the mobile-menu button) must first `await hydrated(page)` from `tests/e2e/_helpers.ts` — clicking before React hydrates does a native no-op submit/navigation and fails intermittently against the dev server.
 

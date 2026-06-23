@@ -1,120 +1,17 @@
 import { useId, useState } from 'react';
-import { joinWaitlist, submitDemo } from '~/server/forms';
+import type { CSSProperties } from 'react';
+import { submitDemo } from '~/server/forms';
 
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 
-/* ────────── Waitlist / research-partner form (SOP · Operations) ────────── */
+const GENERIC_ERROR = 'Something went wrong. Please try again.';
 
-type WaitField = { key: string; label: string; placeholder: string };
-
-export function WaitlistForm({
-  product,
-  fields,
-  submitLabel,
-}: {
-  product: string;
-  fields: WaitField[];
-  submitLabel: string;
-}) {
-  const formId = useId();
-  const [values, setValues] = useState<Record<string, string>>({});
-  const [err, setErr] = useState('');
-  const [pending, setPending] = useState(false);
-  const [done, setDone] = useState(false);
-
-  const set = (k: string, v: string) =>
-    setValues((s) => ({ ...s, [k]: v }));
-
-  const submit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    const email = values.email || '';
-    if (!EMAIL_RE.test(email)) {
-      setErr('Please enter a valid work email.');
-      return;
-    }
-    setErr('');
-    setPending(true);
-    try {
-      await joinWaitlist({
-        data: {
-          email,
-          name: values.name || undefined,
-          company: values.company || undefined,
-          notes: values.extra || undefined,
-          product,
-        },
-      });
-      setDone(true);
-    } catch {
-      setErr('Something went wrong. Please try again.');
-    } finally {
-      setPending(false);
-    }
-  };
-
-  if (done) {
-    return (
-      <div className="form" style={{ textAlign: 'center', padding: '32px 24px' }}>
-        <div
-          className="lw-eyebrow"
-          style={{ color: 'var(--amber)', justifyContent: 'center', marginBottom: 12 }}
-        >
-          Received · ack
-        </div>
-        <h3 style={{ fontSize: 20, fontWeight: 600, color: '#fff', margin: 0 }}>
-          You&apos;re on the list.
-        </h3>
-        <p
-          style={{
-            color: 'rgba(255,255,255,0.7)',
-            fontSize: 14,
-            marginTop: 8,
-          }}
-        >
-          We&apos;ll email <b style={{ color: '#fff' }}>{values.email}</b> as the
-          cohort opens.
-        </p>
-      </div>
-    );
-  }
-
-  return (
-    <form className="form" onSubmit={submit} noValidate>
-      {fields.map((f) => (
-        <div className="row" key={f.key}>
-          <label htmlFor={`${formId}-${f.key}`}>{f.label}</label>
-          <input
-            id={`${formId}-${f.key}`}
-            type={f.key === 'email' ? 'email' : 'text'}
-            placeholder={f.placeholder}
-            value={values[f.key] || ''}
-            onChange={(e) => set(f.key, e.target.value)}
-          />
-        </div>
-      ))}
-      <button
-        type="submit"
-        className="lw-btn lw-btn-amber"
-        style={{ width: '100%', justifyContent: 'center', marginTop: 8 }}
-        disabled={pending}
-      >
-        {pending ? 'Sending…' : submitLabel} <span className="arrow">→</span>
-      </button>
-      {err && (
-        <div
-          style={{
-            color: 'var(--amber)',
-            fontSize: 12,
-            marginTop: 10,
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
-          {err}
-        </div>
-      )}
-    </form>
-  );
-}
+/* Shared inline style for the mono-styled error line shown below a form. */
+const errorLineStyle: CSSProperties = {
+  fontSize: 12,
+  marginTop: 10,
+  fontFamily: 'var(--font-mono)',
+};
 
 /* ────────── Contact / demo-request form ────────── */
 
@@ -160,7 +57,7 @@ export function ContactForm() {
       });
       setSubmitted(true);
     } catch {
-      setErrs({ form: 'Something went wrong. Please try again.' });
+      setErrs({ form: GENERIC_ERROR });
     } finally {
       setPending(false);
     }
@@ -318,16 +215,7 @@ export function ContactForm() {
         </button>
       </div>
       {errs.form && (
-        <div
-          style={{
-            color: 'var(--err)',
-            fontSize: 12,
-            marginTop: 10,
-            fontFamily: 'var(--font-mono)',
-          }}
-        >
-          {errs.form}
-        </div>
+        <div style={{ ...errorLineStyle, color: 'var(--err)' }}>{errs.form}</div>
       )}
     </form>
   );

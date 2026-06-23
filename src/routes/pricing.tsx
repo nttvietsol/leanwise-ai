@@ -44,6 +44,76 @@ const FAQ: [string, string][] = [
   ],
 ];
 
+type Plan = {
+  lbl: string;
+  name: string;
+  price: React.ReactNode;
+  desc: string;
+  features: React.ReactNode[];
+  featured?: boolean;
+  cta: { label: string; variant: 'ghost' | 'amber' };
+};
+
+const PLANS: Plan[] = [
+  {
+    lbl: 'PLAN.01',
+    name: 'Starter',
+    price: (
+      <>
+        Contact<span className="unit">us for pricing</span>
+      </>
+    ),
+    desc: 'For a single plant getting started with CONNECT audits.',
+    features: [
+      'CONNECT Mastery (full)',
+      'Up to 50 audits / month',
+      '2 connected systems',
+      'Standard SLA · 99.5%',
+      'Email support · business hours',
+    ],
+    cta: { label: 'Talk to sales', variant: 'ghost' },
+  },
+  {
+    lbl: 'PLAN.02',
+    name: 'Plant',
+    price: (
+      <>
+        Contact<span className="unit">us for pricing</span>
+      </>
+    ),
+    desc: 'For plants running CONNECT audits and piloting SOP.',
+    features: [
+      'Everything in Starter',
+      'Unlimited audits',
+      <>SOP Mastery early access (Q4 &rsquo;26)</>,
+      'Bilingual reports · EN / VI',
+      'Premium SLA · 99.9%',
+      'Slack channel · founder access',
+    ],
+    featured: true,
+    cta: { label: 'Book a demo', variant: 'amber' },
+  },
+  {
+    lbl: 'PLAN.03',
+    name: 'Portfolio',
+    price: (
+      <>
+        Contact<span className="unit">5+ plants</span>
+      </>
+    ),
+    desc: 'For multi-plant operators and contract-manufacturer groups.',
+    features: [
+      'Everything in Plant',
+      'Operations Mastery research access',
+      'SOC 2 + on-prem deployment',
+      'Cross-plant rollups',
+      'Dedicated solutions engineer',
+      <>Custom integrations &amp; SLAs</>,
+    ],
+    cta: { label: 'Talk to founders', variant: 'ghost' },
+  },
+];
+
 function Pricing() {
   return (
     <>
@@ -70,83 +140,30 @@ function Pricing() {
       <section className="lw-section">
         <div className="lw-container">
           <div className="lw-price-grid lw-reveal">
-            <div className="lw-price">
-              <div className="lbl">PLAN.01</div>
-              <h3>Starter</h3>
-              <div className="price">
-                Contact<span className="unit">us for pricing</span>
-              </div>
-              <div className="desc">
-                For a single plant getting started with CONNECT audits.
-              </div>
-              <ul>
-                <li>CONNECT Mastery (full)</li>
-                <li>Up to 50 audits / month</li>
-                <li>2 connected systems</li>
-                <li>Standard SLA · 99.5%</li>
-                <li>Email support · business hours</li>
-              </ul>
-              <Link
-                to="/contact"
-                className="lw-btn lw-btn-ghost"
-                style={{ justifyContent: 'center', marginTop: 'auto' }}
+            {PLANS.map((plan) => (
+              <div
+                key={plan.lbl}
+                className={plan.featured ? 'lw-price featured' : 'lw-price'}
               >
-                Talk to sales <span className="arrow">→</span>
-              </Link>
-            </div>
-
-            <div className="lw-price featured">
-              <span className="ribbon">MOST PICKED</span>
-              <div className="lbl">PLAN.02</div>
-              <h3>Plant</h3>
-              <div className="price">
-                Contact<span className="unit">us for pricing</span>
+                {plan.featured && <span className="ribbon">MOST PICKED</span>}
+                <div className="lbl">{plan.lbl}</div>
+                <h3>{plan.name}</h3>
+                <div className="price">{plan.price}</div>
+                <div className="desc">{plan.desc}</div>
+                <ul>
+                  {plan.features.map((feat, i) => (
+                    <li key={i}>{feat}</li>
+                  ))}
+                </ul>
+                <Link
+                  to="/contact"
+                  className={`lw-btn lw-btn-${plan.cta.variant}`}
+                  style={{ justifyContent: 'center', marginTop: 'auto' }}
+                >
+                  {plan.cta.label} <span className="arrow">→</span>
+                </Link>
               </div>
-              <div className="desc">
-                For plants running CONNECT audits and piloting SOP.
-              </div>
-              <ul>
-                <li>Everything in Starter</li>
-                <li>Unlimited audits</li>
-                <li>SOP Mastery early access (Q4 &rsquo;26)</li>
-                <li>Bilingual reports · EN / VI</li>
-                <li>Premium SLA · 99.9%</li>
-                <li>Slack channel · founder access</li>
-              </ul>
-              <Link
-                to="/contact"
-                className="lw-btn lw-btn-amber"
-                style={{ justifyContent: 'center', marginTop: 'auto' }}
-              >
-                Book a demo <span className="arrow">→</span>
-              </Link>
-            </div>
-
-            <div className="lw-price">
-              <div className="lbl">PLAN.03</div>
-              <h3>Portfolio</h3>
-              <div className="price">
-                Contact<span className="unit">5+ plants</span>
-              </div>
-              <div className="desc">
-                For multi-plant operators and contract-manufacturer groups.
-              </div>
-              <ul>
-                <li>Everything in Plant</li>
-                <li>Operations Mastery research access</li>
-                <li>SOC 2 + on-prem deployment</li>
-                <li>Cross-plant rollups</li>
-                <li>Dedicated solutions engineer</li>
-                <li>Custom integrations &amp; SLAs</li>
-              </ul>
-              <Link
-                to="/contact"
-                className="lw-btn lw-btn-ghost"
-                style={{ justifyContent: 'center', marginTop: 'auto' }}
-              >
-                Talk to founders <span className="arrow">→</span>
-              </Link>
-            </div>
+            ))}
           </div>
 
           <div className="lw-compare lw-reveal" style={{ marginTop: 64 }}>

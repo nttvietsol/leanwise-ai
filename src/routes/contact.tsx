@@ -15,6 +15,12 @@ export const Route = createFileRoute('/contact')({
   }),
 });
 
+const DIRECT_CONTACTS: [string, string][] = [
+  ['Demo / sales', 'founders@leanwise.ai'],
+  ['Press', 'press@leanwise.ai'],
+  ['Security', 'security@leanwise.ai'],
+];
+
 function Contact() {
   return (
     <>
@@ -50,18 +56,12 @@ function Contact() {
                   Skip the form. Email a founder directly.
                 </div>
                 <div style={{ marginTop: 24 }}>
-                  <div className="row">
-                    <span>Demo / sales</span>
-                    <span>founders@leanwise.ai</span>
-                  </div>
-                  <div className="row">
-                    <span>Press</span>
-                    <span>press@leanwise.ai</span>
-                  </div>
-                  <div className="row">
-                    <span>Security</span>
-                    <span>security@leanwise.ai</span>
-                  </div>
+                  {DIRECT_CONTACTS.map(([label, email]) => (
+                    <div key={label} className="row">
+                      <span>{label}</span>
+                      <span>{email}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
 

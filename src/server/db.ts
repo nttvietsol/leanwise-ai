@@ -314,10 +314,3 @@ export async function dbUpdateStory(
 export async function dbDeleteStory(id: string): Promise<void> {
   await db().prepare(`DELETE FROM customer_stories WHERE id = ?`).bind(id).run();
 }
-
-export async function dbCountPosts(): Promise<number> {
-  const row = await db()
-    .prepare(`SELECT COUNT(*) AS n FROM posts`)
-    .first<{ n: number }>();
-  return row?.n ?? 0;
-}

@@ -1,5 +1,4 @@
 import { test, expect } from '@playwright/test';
-import { hydrated } from './_helpers';
 
 test.describe('Home page', () => {
   test('loads hero, trust strip, and core sections', async ({ page }) => {
@@ -7,25 +6,33 @@ test.describe('Home page', () => {
     await expect(page).toHaveTitle(/LeanWise AI/);
 
     await expect(
-      page.getByRole('heading', { name: /operating system/i, level: 1 }),
+      page.getByRole('heading', { name: /compliance audits/i, level: 1 }),
     ).toBeVisible();
-    await expect(page.getByRole('link', { name: /Get a demo/ }).first()).toBeVisible();
+    await expect(
+      page.getByRole('link', { name: /Book a demo/ }).first(),
+    ).toBeVisible();
 
     await expect(page.getByText('Live at IKEA-supplier plants')).toBeVisible();
 
-    await expect(page.getByRole('heading', { name: /still bleed hours/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /Three AI modules/ })).toBeVisible();
-    await expect(page.getByRole('heading', { name: /How LeanWise compares/ })).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /where suppliers lose days/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /signed-off audit/ }),
+    ).toBeVisible();
+    await expect(
+      page.getByRole('heading', { name: /How LeanWise compares/ }),
+    ).toBeVisible();
   });
 
-  test('product picker switches modules', async ({ page }) => {
+  test('live validation panel and roadmap teaser render', async ({ page }) => {
     await page.goto('/');
-    await hydrated(page);
-    const sopTab = page.getByRole('tab', { name: /SOP Mastery/ });
-    await sopTab.scrollIntoViewIfNeeded();
-    await sopTab.click();
-    await expect(
-      page.getByRole('heading', { name: 'SOP Mastery', exact: true }),
-    ).toBeVisible();
+
+    // The hero artifact (Live Validation Panel) summarizes a validated document.
+    await expect(page.getByText(/39 pass/)).toBeVisible();
+
+    // The subordinate roadmap teaser points to the product roadmap.
+    const roadmapLink = page.getByRole('link', { name: /See the roadmap/ });
+    await expect(roadmapLink).toBeVisible();
   });
 });

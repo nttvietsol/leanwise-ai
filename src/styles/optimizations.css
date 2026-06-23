@@ -467,24 +467,3 @@
   .lw-cta-links { flex-wrap: wrap; }
 }
 
-/* ────────── Mobile telemetry compact ────────── */
-@media (max-width: 600px) {
-  .lw-telemetry-body {
-    grid-template-columns: 1fr;
-    padding: 14px;
-    gap: 12px;
-  }
-  .lw-telemetry-kpi {
-    grid-template-columns: 1fr 1fr;
-    gap: 8px;
-  }
-  /* Drop the 2 less-critical tiles on phones */
-  .lw-telemetry-kpi .lw-tile.cool,
-  .lw-telemetry-kpi .lw-tile.warn { display: none; }
-  /* Hide the alerts feed on phones — it's unreadable at this width */
-  .lw-feed { display: none; }
-  .lw-tile { padding: 12px 14px; }
-  .lw-tile .v { font-size: 24px; }
-  .lw-tile .spark { height: 28px; }
-  .lw-telemetry-h .right .live + span { display: none; }
-}

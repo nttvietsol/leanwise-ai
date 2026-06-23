@@ -9,7 +9,7 @@ test.describe('SEO + static assets', () => {
       .locator('meta[name="description"]')
       .getAttribute('content');
     expect(description).toBeTruthy();
-    expect(description).toMatch(/AI-powered platform/i);
+    expect(description).toMatch(/CONNECT/i);
 
     const ogTitle = await page
       .locator('meta[property="og:title"]')
@@ -22,16 +22,15 @@ test.describe('SEO + static assets', () => {
     expect(ogImage).toContain('/assets/');
   });
 
-  test('html lang="en" and blueprint palette by default', async ({ page }) => {
+  test('html lang="en"', async ({ page }) => {
     await page.goto('/');
     const html = page.locator('html');
     expect(await html.getAttribute('lang')).toBe('en');
-    expect(await html.getAttribute('data-palette')).toBe('blueprint');
   });
 
   test('product page has its own title', async ({ page }) => {
-    await page.goto('/solutions/connect-mastery');
-    await expect(page).toHaveTitle(/CONNECT Mastery/);
+    await page.goto('/product');
+    await expect(page).toHaveTitle(/IKEA CONNECT compliance/);
   });
 
   test('legacy URLs redirect, unknown articles 404 cleanly', async ({ page }) => {
@@ -64,8 +63,8 @@ test.describe('SEO + static assets', () => {
     expect(body).toContain('<urlset');
     for (const path of [
       '/',
-      '/about',
-      '/solutions/connect-mastery',
+      '/company',
+      '/product',
       '/pricing',
       '/resources',
       '/blog/the-auditor-doesnt-care',

@@ -75,31 +75,3 @@ export const submitDemo = createServerFn({ method: 'POST' })
     return { ok: true };
   });
 
-/* ─────────── Waitlist ─────────── */
-export const joinWaitlist = createServerFn({ method: 'POST' })
-  .inputValidator(
-    (d: {
-      email: string;
-      name?: string;
-      company?: string;
-      notes?: string;
-      product?: string;
-    }) => {
-      if (!d.email || !EMAIL_RE.test(d.email))
-        throw new Error('Valid email is required');
-      return d;
-    },
-  )
-  .handler(async ({ data }) => {
-    await sendEmail({
-      subject: `[Waitlist] ${data.product || 'Product'} — ${data.email}`,
-      bodyText:
-        `New waitlist signup\n\n` +
-        `Name:    ${data.name || '—'}\n` +
-        `Email:   ${data.email}\n` +
-        `Company: ${data.company || '—'}\n` +
-        `Notes:   ${data.notes || '—'}\n` +
-        `Product: ${data.product || '—'}\n`,
-    });
-    return { ok: true };
-  });

@@ -1,6 +1,7 @@
 import { createFileRoute, Link, notFound } from '@tanstack/react-router';
 import { getPublishedPost, listPublishedPosts } from '~/server/content';
 import { renderMarkdown } from '~/lib/markdown';
+import { fmtDate } from '~/lib/format';
 import type { Post } from '~/server/db';
 
 export const Route = createFileRoute('/blog/$slug')({
@@ -47,10 +48,6 @@ export const Route = createFileRoute('/blog/$slug')({
     </section>
   ),
 });
-
-function fmtDate(iso: string | null): string {
-  return iso ? iso.slice(0, 10).replace(/-/g, '·') : '';
-}
 
 function BlogPost() {
   const { post, related, html } = Route.useLoaderData();

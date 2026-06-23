@@ -1,6 +1,31 @@
+import type { CSSProperties } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
 /* Scroll-driven How-It-Works + the three audit stage frames. */
+
+const UPLOAD_FILES = [
+  'NSF-026-TSS.pdf',
+  'TestPlan-2026-Q2.xlsx',
+  'CONNECT-spec-v18.pdf',
+];
+
+const uploadChipRow: CSSProperties = {
+  display: 'flex',
+  justifyContent: 'center',
+  gap: 8,
+  marginTop: 16,
+  flexWrap: 'wrap',
+};
+
+const uploadChip: CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 11,
+  padding: '4px 10px',
+  background: 'var(--paper-2)',
+  border: '1px solid var(--line)',
+  borderRadius: 100,
+  color: 'var(--ink-3)',
+};
 
 function UploadStage() {
   return (
@@ -8,33 +33,12 @@ function UploadStage() {
       <div className="doc"></div>
       <div className="lbl">DROP FILES HERE</div>
       <div className="sub">PDF · DOCX · XLSX up to 50 MB · batch supported</div>
-      <div
-        style={{
-          display: 'flex',
-          justifyContent: 'center',
-          gap: 8,
-          marginTop: 16,
-          flexWrap: 'wrap',
-        }}
-      >
-        {['NSF-026-TSS.pdf', 'TestPlan-2026-Q2.xlsx', 'CONNECT-spec-v18.pdf'].map(
-          (f) => (
-            <span
-              key={f}
-              style={{
-                fontFamily: 'var(--font-mono)',
-                fontSize: 11,
-                padding: '4px 10px',
-                background: 'var(--paper-2)',
-                border: '1px solid var(--line)',
-                borderRadius: 100,
-                color: 'var(--ink-3)',
-              }}
-            >
-              {f}
-            </span>
-          ),
-        )}
+      <div style={uploadChipRow}>
+        {UPLOAD_FILES.map((f) => (
+          <span key={f} style={uploadChip}>
+            {f}
+          </span>
+        ))}
       </div>
     </div>
   );
@@ -67,10 +71,10 @@ function ProcessStage({ active }: { active: boolean }) {
   ];
   return (
     <div className="sf-process">
-      {rows.map((r, i) => {
+      {rows.map((r) => {
         const done = r.p >= 100;
         return (
-          <div key={i} className={`row ${done ? '' : 'pending'}`}>
+          <div key={r.n} className={`row ${done ? '' : 'pending'}`}>
             <span className="check">{done ? '✓' : '◐'}</span>
             <span className="name">{r.n}</span>
             <span className="pct">{r.p}%</span>
@@ -115,6 +119,15 @@ export function ResultStage() {
     </div>
   );
 }
+
+/* macOS-style window lights for the console header. */
+const CONSOLE_LIGHTS = ['#FF5F57', '#FEBC2E', '#28C840'];
+
+const consoleLight: CSSProperties = {
+  width: 10,
+  height: 10,
+  borderRadius: '50%',
+};
 
 const STEPS = [
   {
@@ -184,9 +197,9 @@ export function HowItWorks() {
               className="lights"
               style={{ display: 'inline-flex', gap: 6, marginRight: 8 }}
             >
-              <i style={{ width: 10, height: 10, borderRadius: '50%', background: '#FF5F57' }}></i>
-              <i style={{ width: 10, height: 10, borderRadius: '50%', background: '#FEBC2E' }}></i>
-              <i style={{ width: 10, height: 10, borderRadius: '50%', background: '#28C840' }}></i>
+              {CONSOLE_LIGHTS.map((color) => (
+                <i key={color} style={{ ...consoleLight, background: color }}></i>
+              ))}
             </div>
             <span style={{ color: 'var(--ink-3)' }}>
               app.leanwise.ai/connect/audit

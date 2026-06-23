@@ -34,6 +34,15 @@ export const getAdminIdentity = createServerFn({ method: 'GET' }).handler(
   async (): Promise<AdminIdentity | null> => getAdmin(),
 );
 
+/** Validate that a required string field is present, returning the input. */
+function requireField<T extends Record<string, unknown>>(
+  d: T,
+  key: keyof T,
+): T {
+  if (!d?.[key]) throw new Error(`${String(key)} is required`);
+  return d;
+}
+
 /* ─────────────────────── public reads ─────────────────────── */
 
 export const listPublishedPosts = createServerFn({ method: 'GET' }).handler(
@@ -45,10 +54,7 @@ export const listStories = createServerFn({ method: 'GET' }).handler(
 );
 
 export const getPublishedPost = createServerFn({ method: 'GET' })
-  .inputValidator((d: { slug: string }) => {
-    if (!d?.slug) throw new Error('slug is required');
-    return d;
-  })
+  .inputValidator((d: { slug: string }) => requireField(d, 'slug'))
   .handler(async ({ data }): Promise<Post | null> =>
     dbGetPublishedPostBySlug(data.slug),
   );
@@ -63,10 +69,7 @@ export const adminListPosts = createServerFn({ method: 'GET' }).handler(
 );
 
 export const adminGetPost = createServerFn({ method: 'GET' })
-  .inputValidator((d: { id: string }) => {
-    if (!d?.id) throw new Error('id is required');
-    return d;
-  })
+  .inputValidator((d: { id: string }) => requireField(d, 'id'))
   .handler(async ({ data }): Promise<Post | null> => {
     await requireAdmin();
     return dbGetPostById(data.id);
@@ -146,7 +149,7 @@ export const createPost = createServerFn({ method: 'POST' })
 
 export const updatePost = createServerFn({ method: 'POST' })
   .inputValidator((d: { id: string } & Partial<PostInput>) => {
-    if (!d?.id) throw new Error('id is required');
+    requireField(d, 'id');
     return { id: d.id, ...validatePost(d) };
   })
   .handler(async ({ data }): Promise<Post> => {
@@ -161,10 +164,7 @@ export const updatePost = createServerFn({ method: 'POST' })
   });
 
 export const deletePost = createServerFn({ method: 'POST' })
-  .inputValidator((d: { id: string }) => {
-    if (!d?.id) throw new Error('id is required');
-    return d;
-  })
+  .inputValidator((d: { id: string }) => requireField(d, 'id'))
   .handler(async ({ data }): Promise<{ ok: true }> => {
     await requireAdmin();
     await dbDeletePost(data.id);
@@ -180,7 +180,7 @@ export const createStory = createServerFn({ method: 'POST' })
 
 export const updateStory = createServerFn({ method: 'POST' })
   .inputValidator((d: { id: string } & Partial<StoryInput>) => {
-    if (!d?.id) throw new Error('id is required');
+    requireField(d, 'id');
     return { id: d.id, ...validateStory(d) };
   })
   .handler(async ({ data }): Promise<Story> => {
@@ -192,10 +192,7 @@ export const updateStory = createServerFn({ method: 'POST' })
   });
 
 export const deleteStory = createServerFn({ method: 'POST' })
-  .inputValidator((d: { id: string }) => {
-    if (!d?.id) throw new Error('id is required');
-    return d;
-  })
+  .inputValidator((d: { id: string }) => requireField(d, 'id'))
   .handler(async ({ data }): Promise<{ ok: true }> => {
     await requireAdmin();
     await dbDeleteStory(data.id);

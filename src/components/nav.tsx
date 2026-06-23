@@ -1,32 +1,22 @@
+import type { CSSProperties } from 'react';
 import { useEffect, useState } from 'react';
 import { Link, useLocation } from '@tanstack/react-router';
 import { Logo } from './logo';
 
-/* ────── Top status bar — live node tick ────── */
-const NODES = ['TALIMEX', 'CPC', 'NGOC SON', 'SEDO'];
-
+/* ────── Top status bar — static, factual chrome ──────
+   Deliberately not animated: a compliance buyer reads a marquee as decoration
+   (and "early-stage"). Static spec facts read as discipline. */
 export function StatusBar({ build = '26.05.07' }: { build?: string }) {
-  const [nodeIdx, setNodeIdx] = useState(0);
-  useEffect(() => {
-    if (window.matchMedia?.('(prefers-reduced-motion: reduce)').matches) return;
-    const id = setInterval(() => setNodeIdx((i) => (i + 1) % NODES.length), 4200);
-    return () => clearInterval(id);
-  }, []);
   return (
     <div className="lw-statusbar">
       <div className="lw-container">
         <div className="row">
           <div className="left">
-            <span className="live">SYS · ONLINE</span>
-            <span>
-              NODE ·{' '}
-              <span key={nodeIdx} className="lw-tick">
-                {NODES[nodeIdx]}
-              </span>
-            </span>
+            <span className="live">CONNECT · ALIGNED</span>
+            <span>TSS SPEC · 2026.1</span>
           </div>
           <div className="meta">
-            <span>UPTIME · 99.97%</span>
+            <span>99.2% MATCH ACCURACY</span>
             <span>BUILD · {build}</span>
             <span>HCMC · UTC+7</span>
           </div>
@@ -38,25 +28,58 @@ export function StatusBar({ build = '26.05.07' }: { build?: string }) {
 
 /* ────── Primary nav ────── */
 const LINKS = [
-  { name: 'Platform', to: '/' },
-  { name: 'CONNECT', to: '/solutions/connect-mastery' },
-  { name: 'SOP', to: '/solutions/sop-mastery' },
-  { name: 'Operations', to: '/solutions/operations-mastery' },
-  { name: 'Pricing', to: '/pricing' },
+  { name: 'Product', to: '/product' },
   { name: 'Customers', to: '/customers' },
-  { name: 'Resources', to: '/resources' },
-  { name: 'About', to: '/about' },
+  { name: 'Pricing', to: '/pricing' },
+  { name: 'Company', to: '/company' },
 ] as const;
 
 function activeName(pathname: string): string {
-  if (pathname === '/') return 'Platform';
+  if (pathname === '/') return '';
   if (pathname.startsWith('/case-studies') || pathname.startsWith('/customers'))
     return 'Customers';
-  if (pathname.startsWith('/resources') || pathname.startsWith('/blog'))
-    return 'Resources';
-  const hit = LINKS.find((l) => l.to !== '/' && pathname.startsWith(l.to));
+  if (pathname.startsWith('/product') || pathname.startsWith('/solutions'))
+    return 'Product';
+  if (pathname.startsWith('/company') || pathname.startsWith('/about'))
+    return 'Company';
+  const hit = LINKS.find((l) => pathname.startsWith(l.to));
   return hit ? hit.name : '';
 }
+
+/* Inline styles for the mobile menu — no `.lw-*` class exists for this overlay. */
+const mobileMenuStyles = {
+  backdrop: {
+    position: 'fixed',
+    inset: 0,
+    background: 'rgba(10,22,40,0.6)',
+    backdropFilter: 'blur(6px)',
+    zIndex: 100,
+  },
+  panel: {
+    background: '#fff',
+    maxWidth: 360,
+    marginLeft: 'auto',
+    height: '100%',
+    padding: 24,
+    display: 'flex',
+    flexDirection: 'column',
+    gap: 4,
+  },
+  header: {
+    display: 'flex',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 16,
+  },
+  close: { fontSize: 20, color: 'var(--ink-3)' },
+  link: {
+    padding: '14px 8px',
+    borderBottom: '1px solid var(--line)',
+    fontSize: 16,
+    color: 'var(--ink-2)',
+  },
+  cta: { marginTop: 16, justifyContent: 'center' },
+} satisfies Record<string, CSSProperties>;
 
 export function Nav() {
   const { pathname } = useLocation();
@@ -110,67 +133,33 @@ export function Nav() {
       </div>
 
       {open && (
-        <div
-          style={{
-            position: 'fixed',
-            inset: 0,
-            background: 'rgba(10,22,40,0.6)',
-            backdropFilter: 'blur(6px)',
-            zIndex: 100,
-          }}
-          onClick={() => setOpen(false)}
-        >
+        <div style={mobileMenuStyles.backdrop} onClick={() => setOpen(false)}>
           <div
             role="dialog"
             aria-modal="true"
             aria-label="Menu"
-            style={{
-              background: '#fff',
-              maxWidth: 360,
-              marginLeft: 'auto',
-              height: '100%',
-              padding: 24,
-              display: 'flex',
-              flexDirection: 'column',
-              gap: 4,
-            }}
+            style={mobileMenuStyles.panel}
             onClick={(e) => e.stopPropagation()}
           >
-            <div
-              style={{
-                display: 'flex',
-                justifyContent: 'space-between',
-                alignItems: 'center',
-                marginBottom: 16,
-              }}
-            >
+            <div style={mobileMenuStyles.header}>
               <Logo />
               <button
                 onClick={() => setOpen(false)}
                 aria-label="Close menu"
-                style={{ fontSize: 20, color: 'var(--ink-3)' }}
+                style={mobileMenuStyles.close}
               >
                 ✕
               </button>
             </div>
             {LINKS.map((l) => (
-              <Link
-                key={l.name}
-                to={l.to}
-                style={{
-                  padding: '14px 8px',
-                  borderBottom: '1px solid var(--line)',
-                  fontSize: 16,
-                  color: 'var(--ink-2)',
-                }}
-              >
+              <Link key={l.name} to={l.to} style={mobileMenuStyles.link}>
                 {l.name}
               </Link>
             ))}
             <Link
               to="/contact"
               className="lw-btn lw-btn-primary"
-              style={{ marginTop: 16, justifyContent: 'center' }}
+              style={mobileMenuStyles.cta}
             >
               Get a demo <span className="arrow">→</span>
             </Link>

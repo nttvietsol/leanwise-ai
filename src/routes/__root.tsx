@@ -23,16 +23,16 @@ export const Route = createRootRoute({
     meta: [
       { charSet: 'utf-8' },
       { name: 'viewport', content: 'width=device-width, initial-scale=1' },
-      { title: 'LeanWise AI — Operating system for lean factories' },
+      { title: 'LeanWise AI — IKEA CONNECT compliance audits in minutes' },
       {
         name: 'description',
         content:
-          'AI-powered platform built to eliminate compliance waste, standardize processes, and give your manufacturing team clarity at every level.',
+          'LeanWise AI automates IKEA CONNECT compliance verification — reading every test report and declaration and validating it against the live CONNECT TSS spec, with a confidence score on every line.',
       },
       { property: 'og:title', content: 'LeanWise AI' },
       {
         property: 'og:description',
-        content: 'The operating system for lean factories.',
+        content: 'IKEA CONNECT compliance audits in 3 minutes, not 6 hours.',
       },
       { property: 'og:type', content: 'website' },
       { property: 'og:image', content: '/assets/dashboard-preview.png' },
@@ -73,7 +73,7 @@ function RootLayout() {
 
 function RootDocument({ children }: { children: ReactNode }) {
   return (
-    <html lang="en" data-palette="blueprint">
+    <html lang="en">
       <head>
         <HeadContent />
       </head>

@@ -7,8 +7,8 @@ test.describe('Navigation', () => {
 
     await page.goto('/');
     const nav = page.getByRole('navigation', { name: 'Primary' });
-    await nav.getByRole('link', { name: 'CONNECT', exact: true }).click();
-    await expect(page).toHaveURL('/solutions/connect-mastery');
+    await nav.getByRole('link', { name: 'Product', exact: true }).click();
+    await expect(page).toHaveURL('/product');
 
     await nav.getByRole('link', { name: 'Pricing', exact: true }).click();
     await expect(page).toHaveURL('/pricing');
@@ -21,13 +21,13 @@ test.describe('Navigation', () => {
     await hydrated(page);
     await page.getByRole('button', { name: 'Menu' }).click();
     const menu = page.getByRole('dialog', { name: 'Menu' });
-    await expect(menu.getByRole('link', { name: 'Resources' })).toBeVisible();
-    await menu.getByRole('link', { name: 'About', exact: true }).click();
-    await expect(page).toHaveURL('/about');
+    await expect(menu.getByRole('link', { name: 'Product' })).toBeVisible();
+    await menu.getByRole('link', { name: 'Company', exact: true }).click();
+    await expect(page).toHaveURL('/company');
   });
 
-  test('status bar shows live system marker', async ({ page }) => {
+  test('status bar shows the spec-aligned system marker', async ({ page }) => {
     await page.goto('/');
-    await expect(page.getByText('SYS · ONLINE')).toBeVisible();
+    await expect(page.getByText('CONNECT · ALIGNED')).toBeVisible();
   });
 });

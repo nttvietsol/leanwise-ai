@@ -14,6 +14,13 @@ export const Route = createFileRoute('/admin/')({
   component: Dashboard,
 });
 
+/** Monospaced metadata cell (category, dates, sort order). */
+const monoCell: React.CSSProperties = {
+  fontFamily: 'var(--font-mono)',
+  fontSize: 12,
+};
+const monoCellMuted: React.CSSProperties = { ...monoCell, color: 'var(--ink-4)' };
+
 function fmtDate(iso: string | null): string {
   return iso ? iso.slice(0, 10) : '—';
 }
@@ -22,16 +29,16 @@ function Dashboard() {
   const { posts, stories } = Route.useLoaderData();
   const router = useRouter();
 
-  const removePost = async (id: string, title: string) => {
+  async function removePost(id: string, title: string): Promise<void> {
     if (!window.confirm(`Delete "${title}"? This cannot be undone.`)) return;
     await deletePost({ data: { id } });
     router.invalidate();
-  };
-  const removeStory = async (id: string, company: string) => {
+  }
+  async function removeStory(id: string, company: string): Promise<void> {
     if (!window.confirm(`Delete the ${company} story?`)) return;
     await deleteStory({ data: { id } });
     router.invalidate();
-  };
+  }
 
   return (
     <>
@@ -82,21 +89,11 @@ function Dashboard() {
                       </span>
                     )}
                   </td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>
-                    {p.category}
-                  </td>
+                  <td style={monoCell}>{p.category}</td>
                   <td>
                     <span className={`adm-tag ${p.status}`}>{p.status}</span>
                   </td>
-                  <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      color: 'var(--ink-4)',
-                    }}
-                  >
-                    {fmtDate(p.updatedAt)}
-                  </td>
+                  <td style={monoCellMuted}>{fmtDate(p.updatedAt)}</td>
                   <td>
                     <div className="adm-actions" style={{ justifyContent: 'flex-end' }}>
                       <Link
@@ -164,18 +161,10 @@ function Dashboard() {
                   <td style={{ color: 'var(--ink-3)', fontSize: 13 }}>
                     {s.industry}
                   </td>
-                  <td style={{ fontFamily: 'var(--font-mono)', fontSize: 12 }}>
+                  <td style={monoCell}>
                     {s.kpi} {s.kpiUnit}
                   </td>
-                  <td
-                    style={{
-                      fontFamily: 'var(--font-mono)',
-                      fontSize: 12,
-                      color: 'var(--ink-4)',
-                    }}
-                  >
-                    {s.sortOrder}
-                  </td>
+                  <td style={monoCellMuted}>{s.sortOrder}</td>
                   <td>
                     <div className="adm-actions" style={{ justifyContent: 'flex-end' }}>
                       <Link

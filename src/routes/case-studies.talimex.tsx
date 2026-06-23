@@ -14,6 +14,41 @@ export const Route = createFileRoute('/case-studies/talimex')({
   }),
 });
 
+const HERO_STATS: { num: React.ReactNode; lbl: string; desc: string }[] = [
+  {
+    num: (
+      <>
+        <span className="a">−99</span>%
+      </>
+    ),
+    lbl: 'Audit time',
+    desc: '6h baseline → 3min average, measured across 47 cycles',
+  },
+  {
+    num: <span className="a">0</span>,
+    lbl: 'Failed audits Q1',
+    desc: 'First clean quarter in two years of CONNECT submissions',
+  },
+  {
+    num: (
+      <>
+        <span className="a">$184</span>K
+      </>
+    ),
+    lbl: 'Saved · year one',
+    desc: 'Direct labor + avoided audit-failure shipment delays',
+  },
+];
+
+const FACTS: [string, string][] = [
+  ['Customer', 'Talimex JSC'],
+  ['Industry', 'Furniture · IKEA Tier-1 supplier'],
+  ['Location', 'HCMC, Vietnam'],
+  ['Plant size', '14 lines · 320 operators'],
+  ['Module', 'CONNECT Mastery'],
+  ['Live since', 'November 2025'],
+];
+
 function CaseTalimex() {
   return (
     <>
@@ -52,33 +87,13 @@ function CaseTalimex() {
             failed CONNECT cycles.
           </h1>
           <div className="lw-case-hero-stats lw-reveal" data-d="2">
-            <div className="lw-case-stat">
-              <div className="num">
-                <span className="a">−99</span>%
+            {HERO_STATS.map((stat) => (
+              <div key={stat.lbl} className="lw-case-stat">
+                <div className="num">{stat.num}</div>
+                <div className="lbl">{stat.lbl}</div>
+                <div className="desc">{stat.desc}</div>
               </div>
-              <div className="lbl">Audit time</div>
-              <div className="desc">
-                6h baseline → 3min average, measured across 47 cycles
-              </div>
-            </div>
-            <div className="lw-case-stat">
-              <div className="num">
-                <span className="a">0</span>
-              </div>
-              <div className="lbl">Failed audits Q1</div>
-              <div className="desc">
-                First clean quarter in two years of CONNECT submissions
-              </div>
-            </div>
-            <div className="lw-case-stat">
-              <div className="num">
-                <span className="a">$184</span>K
-              </div>
-              <div className="lbl">Saved · year one</div>
-              <div className="desc">
-                Direct labor + avoided audit-failure shipment delays
-              </div>
-            </div>
+            ))}
           </div>
         </div>
       </section>
@@ -87,18 +102,12 @@ function CaseTalimex() {
         <div className="lw-container">
           <div className="lw-case-body lw-reveal">
             <aside>
-              <div className="label">Customer</div>
-              <div className="v">Talimex JSC</div>
-              <div className="label">Industry</div>
-              <div className="v">Furniture · IKEA Tier-1 supplier</div>
-              <div className="label">Location</div>
-              <div className="v">HCMC, Vietnam</div>
-              <div className="label">Plant size</div>
-              <div className="v">14 lines · 320 operators</div>
-              <div className="label">Module</div>
-              <div className="v">CONNECT Mastery</div>
-              <div className="label">Live since</div>
-              <div className="v">November 2025</div>
+              {FACTS.map(([label, value]) => (
+                <div key={label} style={{ display: 'contents' }}>
+                  <div className="label">{label}</div>
+                  <div className="v">{value}</div>
+                </div>
+              ))}
               <Link
                 to="/contact"
                 className="lw-btn lw-btn-primary"
@@ -199,11 +208,8 @@ function CaseTalimex() {
               <Link to="/contact" className="lw-btn lw-btn-primary">
                 Book a demo <span className="arrow">→</span>
               </Link>
-              <Link
-                to="/solutions/connect-mastery"
-                className="lw-btn lw-btn-ghost"
-              >
-                CONNECT details
+              <Link to="/product" className="lw-btn lw-btn-ghost">
+                Product details
               </Link>
             </div>
           </div>

@@ -30,8 +30,9 @@ function StoryEditor() {
   const [saving, setSaving] = useState(false);
   const [err, setErr] = useState('');
 
-  const set = <K extends keyof typeof form>(k: K, v: (typeof form)[K]) =>
+  function set<K extends keyof typeof form>(k: K, v: (typeof form)[K]): void {
     setForm((f) => ({ ...f, [k]: v }));
+  }
 
   if (!isNew && !story) {
     return (
@@ -44,7 +45,7 @@ function StoryEditor() {
     );
   }
 
-  const submit = async (e: React.FormEvent) => {
+  async function submit(e: React.FormEvent): Promise<void> {
     e.preventDefault();
     setErr('');
     setSaving(true);
@@ -55,11 +56,11 @@ function StoryEditor() {
         await updateStory({ data: { id, ...form } });
       }
       navigate({ to: '/admin' });
-    } catch (e) {
-      setErr(e instanceof Error ? e.message : 'Could not save the story.');
+    } catch (cause) {
+      setErr(cause instanceof Error ? cause.message : 'Could not save the story.');
       setSaving(false);
     }
-  };
+  }
 
   return (
     <>

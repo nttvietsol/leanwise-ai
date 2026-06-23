@@ -138,26 +138,26 @@ function Customers() {
       <section className="lw-section">
         <div className="lw-container">
           <div className="lw-stories-grid lw-reveal" style={{ gap: 16 }}>
-            {stories.map((s) =>
-              s.caseStudySlug ? (
+            {stories.map((s) => {
+              const cardStyle = {
+                gridTemplateColumns: '1fr',
+                alignItems: 'stretch',
+              } as const;
+              return s.caseStudySlug ? (
                 <Link
                   key={s.id}
                   to="/case-studies/talimex"
                   className="lw-story"
-                  style={{ gridTemplateColumns: '1fr', alignItems: 'stretch' }}
+                  style={cardStyle}
                 >
                   <StoryBody s={s} />
                 </Link>
               ) : (
-                <div
-                  key={s.id}
-                  className="lw-story"
-                  style={{ gridTemplateColumns: '1fr', alignItems: 'stretch' }}
-                >
+                <div key={s.id} className="lw-story" style={cardStyle}>
                   <StoryBody s={s} />
                 </div>
-              ),
-            )}
+              );
+            })}
           </div>
         </div>
       </section>

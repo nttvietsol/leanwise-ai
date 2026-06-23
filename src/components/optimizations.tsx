@@ -1,15 +1,35 @@
 import { useEffect, useState } from 'react';
 import { Link } from '@tanstack/react-router';
+import { COMPLIANCE_RESULTS } from '~/lib/metrics';
 
 /* Landing-page proof components: stat banner, scale anchors, comparison
    table, before/after, quote rotator, resources teaser. */
 
+/** The four headline compliance metrics as a 4-cell grid. Shared by the Home
+    and Product pages so the markup never diverges. */
+export function ResultsGrid() {
+  return (
+    <div className="lw-results-grid lw-reveal">
+      {COMPLIANCE_RESULTS.map((r) => (
+        <div key={r.lbl} className="lw-results-cell">
+          <div className="lbl">{r.lbl.toUpperCase()}</div>
+          <div className="num">
+            <span className="a">{r.num}</span>
+            <span className="unit">{r.unit}</span>
+          </div>
+          <div className="desc">{r.desc}</div>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function CompactStatBanner() {
   const stats = [
-    { num: '+8.2', unit: 'pts', lbl: 'OEE improvement' },
-    { num: '−34', unit: '%', lbl: 'Downtime reduction' },
     { num: '75', unit: '%', lbl: 'Faster audit cycle' },
-    { num: '3.4', unit: '×', lbl: 'ROI · year one' },
+    { num: '99.2', unit: '%', lbl: 'Match accuracy' },
+    { num: '0', unit: '', lbl: 'Failed audits · Q1' },
+    { num: '$48K', unit: '', lbl: 'Saved · plant / quarter' },
   ];
   return (
     <div className="lw-statbanner">
@@ -168,8 +188,28 @@ export function ComparisonTable() {
   );
 }
 
+type FlowStep = { lbl: string; t: string };
+
+function FlowTrack({ steps }: { steps: FlowStep[] }) {
+  return (
+    <div className="track">
+      {steps.map((s, i) => (
+        <div
+          key={i}
+          className="seg"
+          style={{ flex: parseInt(s.t) }}
+          title={`${s.lbl} · ${s.t}`}
+        >
+          <span className="t">{s.t}</span>
+          <span className="lbl">{s.lbl}</span>
+        </div>
+      ))}
+    </div>
+  );
+}
+
 export function BeforeAfter() {
-  const manual = [
+  const manual: FlowStep[] = [
     { lbl: 'Print TSS', t: '15m' },
     { lbl: 'Fetch CONNECT spec', t: '20m' },
     { lbl: 'Cross-check by hand', t: '180m' },
@@ -179,7 +219,7 @@ export function BeforeAfter() {
     { lbl: 'Compile audit report', t: '30m' },
     { lbl: 'File + archive', t: '10m' },
   ];
-  const auto = [
+  const auto: FlowStep[] = [
     { lbl: 'Drop documents', t: '30s' },
     { lbl: 'AI cross-reference', t: '120s' },
     { lbl: 'Review + export', t: '17s' },
@@ -191,19 +231,7 @@ export function BeforeAfter() {
           <span className="tag">BEFORE · MANUAL</span>
           <span className="total">6 h 0 min · per audit cycle</span>
         </div>
-        <div className="track">
-          {manual.map((s, i) => (
-            <div
-              key={i}
-              className="seg"
-              style={{ flex: parseInt(s.t) }}
-              title={`${s.lbl} · ${s.t}`}
-            >
-              <span className="t">{s.t}</span>
-              <span className="lbl">{s.lbl}</span>
-            </div>
-          ))}
-        </div>
+        <FlowTrack steps={manual} />
       </div>
       <div className="row auto">
         <div className="head">
@@ -212,19 +240,7 @@ export function BeforeAfter() {
             <em>2 m 47 s</em> · same cycle
           </span>
         </div>
-        <div className="track">
-          {auto.map((s, i) => (
-            <div
-              key={i}
-              className="seg"
-              style={{ flex: parseInt(s.t) }}
-              title={`${s.lbl} · ${s.t}`}
-            >
-              <span className="t">{s.t}</span>
-              <span className="lbl">{s.lbl}</span>
-            </div>
-          ))}
-        </div>
+        <FlowTrack steps={auto} />
       </div>
       <div className="lw-bafter-delta">
         <span className="d">−128×</span>

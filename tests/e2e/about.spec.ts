@@ -1,8 +1,8 @@
 import { test, expect } from '@playwright/test';
 
-test.describe('About page', () => {
+test.describe('Company page', () => {
   test('renders hero, principles, and founding team', async ({ page }) => {
-    await page.goto('/about');
+    await page.goto('/company');
 
     await expect(
       page.getByRole('heading', { name: /same factories/, level: 1 }),
@@ -17,6 +17,11 @@ test.describe('About page', () => {
     // Team
     await expect(page.getByText('Nguyen Tien Dat')).toBeVisible();
     await expect(page.getByText('CTO · COFOUNDER')).toBeVisible();
+  });
+
+  test('legacy /about URL redirects to /company', async ({ page }) => {
+    await page.goto('/about');
+    await expect(page).toHaveURL('/company');
   });
 });
 

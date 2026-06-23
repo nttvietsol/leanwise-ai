@@ -1,6 +1,7 @@
 import { useState } from 'react';
 import { createFileRoute, Link } from '@tanstack/react-router';
 import { listPublishedPosts, listStories } from '~/server/content';
+import { fmtDate } from '~/lib/format';
 import type { Post, Story } from '~/server/db';
 
 export const Route = createFileRoute('/resources')({
@@ -24,11 +25,7 @@ export const Route = createFileRoute('/resources')({
   },
 });
 
-/** ISO timestamp → 2026·02·14 */
-function fmtDate(iso: string | null): string {
-  return iso ? iso.slice(0, 10).replace(/-/g, '·') : '';
-}
-
+/** Tab key → display label. The `all` tab carries no category filter. */
 const TABS: [string, string][] = [
   ['all', 'All articles'],
   ['essays', 'Essays'],
@@ -37,6 +34,7 @@ const TABS: [string, string][] = [
   ['cases', 'Customer cases'],
 ];
 
+/** Tab key → post category, for every tab except `all`. */
 const TAB_CAT: Record<string, string> = {
   essays: 'ESSAY',
   method: 'METHOD',
@@ -52,13 +50,12 @@ function Resources() {
   const rest = posts.filter((p) => p.id !== featured?.id);
   const filtered =
     tab === 'all' ? rest : rest.filter((p) => p.category === TAB_CAT[tab]);
-  const counts: Record<string, number> = {
-    all: rest.length,
-    essays: rest.filter((p) => p.category === 'ESSAY').length,
-    method: rest.filter((p) => p.category === 'METHOD').length,
-    eng: rest.filter((p) => p.category === 'ENGINEERING').length,
-    cases: rest.filter((p) => p.category === 'CASE').length,
-  };
+
+  // Per-tab badge counts: `all` is the full list, the rest count by category.
+  const counts: Record<string, number> = { all: rest.length };
+  for (const [key, category] of Object.entries(TAB_CAT)) {
+    counts[key] = rest.filter((p) => p.category === category).length;
+  }
 
   return (
     <>
